@@ -64,6 +64,8 @@ const Editor=({location,match})=>{
   let endPt=""
   if(window.location.host==="localhost:3000") endPt="http://localhost:9000"
   else if(window.location.host==="192.168.0.13:3000") endPt="http://192.168.0.13:9000"
+
+  endPt="https://floating-tor-72233.herokuapp.com"
  
   let [endPoint]=useState(endPt)
   let [socket]=useState(io(endPoint))

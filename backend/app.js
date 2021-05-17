@@ -1,7 +1,6 @@
 const express=require("express");
       app=express();
       bodyParser=require("body-parser");
-      fetch=require("node-fetch");
       cors=require("cors");
       chat=require('./Routers/chat');
       socket=require("socket.io");
@@ -31,7 +30,7 @@ return new Promise((resolve,reject)=>{
 }
 
 
-app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000",""]}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://boring-mestorf-0dca11.netlify.app"]}));
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json({limit: '50mb'}));                  //limit enables to parse requests of size less than or equal to 50mb...Anything bigger the request will not be processed
@@ -42,7 +41,7 @@ const server=http.createServer(app);
 const io=socket(server,{
     cors: {
     cors: true,
-      origins: ["http://localhost:3000","192.168.0.13:3000"],
+      origins: ["http://localhost:3000","192.168.0.13:3000","https://boring-mestorf-0dca11.netlify.app"],
       methods: ["GET", "POST"]
     }
 });
