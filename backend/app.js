@@ -31,7 +31,7 @@ return new Promise((resolve,reject)=>{
 }
 
 
-app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000"]}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000",""]}));
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json({limit: '50mb'}));                  //limit enables to parse requests of size less than or equal to 50mb...Anything bigger the request will not be processed
@@ -81,7 +81,7 @@ io.on('connection',(socket)=>{
     })
 })
 
-server.listen(9000,'0.0.0.0',(err)=>{
+server.listen(process.env.PORT || 9000,'0.0.0.0',(err)=>{
     if(err) console.log(err);
     console.log("Server Started")
 })
