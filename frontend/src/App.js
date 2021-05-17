@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import AceEditor from "react-ace";
 import { useState, useEffect } from 'react'
 
@@ -19,12 +19,6 @@ import "ace-builds/src-noconflict/ext-language_tools"
 import io from 'socket.io-client'
 
 const App=()=>{
-
-  
-
-  const [roomNo, setRoom]=useState(0);
-  const [valArr,setValArr]=useState(["","",""]);
-
 
 
   return (
@@ -71,15 +65,15 @@ const Editor=({location,match})=>{
   if(window.location.host==="localhost:3000") endPt="http://localhost:9000"
   else if(window.location.host==="192.168.0.13:3000") endPt="http://192.168.0.13:9000"
  
-  let [endPoint,setEndPoint]=useState(endPt)
-  let [socket,setSocket]=useState(io(endPoint))
+  let [endPoint]=useState(endPt)
+  let [socket]=useState(io(endPoint))
   let [room,setRoom]=useState(0)
 
 
   let theme=""
-  if(room==1) theme="monokai" 
-  else if(room==2) theme="xcode"
-  else if(room==3) theme="solarized_dark"
+  if(room===1) theme="monokai" 
+  else if(room===2) theme="xcode"
+  else if(room===3) theme="solarized_dark"
 
   useEffect(()=>{
    
@@ -90,7 +84,7 @@ const Editor=({location,match})=>{
     return ()=>{
       socket.emit('closeConnection',{room:`${room}`})
     }
-
+// eslint-disable-next-line
   },[])
 
 
@@ -102,7 +96,9 @@ const Editor=({location,match})=>{
     socket.on('initialiseEditor',val=>{
       setEditorText(val.value)
     })
+  // eslint-disable-next-line
   },[match.params.id])
+
 
       
   let setEditor=(value)=>{
@@ -124,7 +120,6 @@ const Editor=({location,match})=>{
               enableBasicAutocompletion: true,
               enableLiveAutocompletion: true,
               enableSnippets: true,
-              enableSnippets: true
             }}
             debounceChangePeriod={500}
             width={'800px'}
