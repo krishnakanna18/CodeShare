@@ -9,12 +9,13 @@ const express=require("express");
 
       const log = console.log
       
-const db=mysql.createConnection({
-host:"localhost",
-user : 'krishna',
-password : '0mysqldb@Krishna',
-database: 'codeshare'
-})
+// const db=mysql.createConnection({
+// host:"localhost",
+// user : 'krishna',
+// password : '0mysqldb@Krishna',
+// database: 'codeshare'
+// })
+
 
 let query=(exp,values)=>{
 return new Promise((resolve,reject)=>{
@@ -30,7 +31,7 @@ return new Promise((resolve,reject)=>{
 }
 
 
-app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://boring-mestorf-0dca11.netlify.app"]}));
+app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://60a2be5a6ea5e300a1a9aca2--elegant-edison-5499d4.netlify.app"]}));
 app.options('*', cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json({limit: '50mb'}));                  //limit enables to parse requests of size less than or equal to 50mb...Anything bigger the request will not be processed
@@ -41,7 +42,7 @@ const server=http.createServer(app);
 const io=socket(server,{
     cors: {
     cors: true,
-      origins: ["http://localhost:3000","192.168.0.13:3000","https://boring-mestorf-0dca11.netlify.app"],
+      origins: ["http://localhost:3000","192.168.0.13:3000","https://60a2be5a6ea5e300a1a9aca2--elegant-edison-5499d4.netlify.app"],
       methods: ["GET", "POST"]
     }
 });
@@ -52,15 +53,26 @@ io.on('connection',(socket)=>{
     socket.on('joinRoom',async(arg)=>{
 
         log('Request to join',arg.room)
-        let text=""
-        let res=await query("select text from room where no='"+arg.room+"';");
-        if(res.results.length>0)
-        {
-            text=res.results[0].text
-        }
-        else{
-            await query("insert into room values('"+arg.room+"','"+text+"');")
-        }
+        let text=`let query=(exp,values)=>{
+            return new Promise((resolve,reject)=>{
+                db.query(exp,values,(err,results,fields)=>{
+                    if(err)
+                        reject(err);
+                    else
+                        {    
+                            resolve({results:results,fields:fields});
+                }
+                })
+            })
+            }`
+        // let res=await query("select text from room where no='"+arg.room+"';");
+        // if(res.results.length>0)
+        // {
+        //     text=res.results[0].text
+        // }
+        // else{
+        //     await query("insert into room values('"+arg.room+"','"+text+"');")
+        // }
         socket.join(`${arg.room}`)
         socket.emit('initialiseEditor',{value:text})
         log("Joined",socket.rooms)
@@ -68,7 +80,7 @@ io.on('connection',(socket)=>{
 
     socket.on('setEditor',async(arg)=>{
         // log("Editing",socket.rooms,arg.room)
-        await query("update room set text='"+arg.value+"' where no='"+arg.room+"';")
+        // await query("update room set text='"+arg.value+"' where no='"+arg.room+"';")
         socket.to(`${arg.room}`).emit('resetEditor',arg)
     })
 

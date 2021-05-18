@@ -66,7 +66,7 @@ const Editor=({location,match})=>{
   else if(window.location.host==="192.168.0.13:3000") endPt="http://192.168.0.13:9000"
 
   endPt="https://floating-tor-72233.herokuapp.com"
- 
+ console.log(endPt)
   let [endPoint]=useState(endPt)
   let [socket]=useState(io(endPoint))
   let [room,setRoom]=useState(0)
@@ -92,7 +92,6 @@ const Editor=({location,match})=>{
 
   useEffect(()=>{
     socket.emit('closeConnection',{room:`${room}`})
-    console.log("Fired match change->",match.params.id)
     setRoom(match.params.id)
     socket.emit('joinRoom',{room:`${match.params.id}`})
     socket.on('initialiseEditor',val=>{
