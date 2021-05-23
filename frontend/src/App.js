@@ -2,6 +2,12 @@ import React from 'react';
 import AceEditor from "react-ace";
 import { useState, useEffect } from 'react'
 
+import * as Y from 'yjs'
+import { WebsocketProvider } from 'y-websocket'
+import { MonacoBinding } from 'y-monaco'
+import * as monaco from 'monaco-editor'
+
+
 import {
   BrowserRouter as Router,
   Link,
@@ -22,37 +28,59 @@ import io from 'socket.io-client'
 
 const App=()=>{
 
-  return (
-    <Router>
-      <div className="mt-5 d-flex flex-lg-row flex-column">
-          <div className="col-lg-2 col-12 mt-5">
-              <div className="d-flex flex-lg-column flex-row justify-content-md-center align-items-center">
-                <Link to='/room/1' className="">
-                  <button className="w-100 btn btn-dark m-5 ">
-                    Room 1
-                  </button>
-                </Link>
-                <Link to='/room/2' className="">
-                  <button className="w-100 btn btn-dark m-5" >
-                    Room 2
-                  </button>
-                </Link>
-                <Link to='/room/3' className="">
-                  <button className="w-100 btn btn-dark m-5" >
-                    Room 3
-                  </button>
-                </Link>
-              </div>
-          </div>
-          <Switch>
-          {/* {roomNo!==0?
-          <Editor room={roomNo} socket={io(endPoint)}></Editor>
-          :""} */}
-            <Route exact path='/room/:id' component={(props)=><Editor {...props} key={props.match.id}></Editor>}></Route>
-          </Switch>
-      </div>
-    </Router>
+  useEffect(()=>{
+    const ydocument = new Y.Doc()
+    const provider = new WebsocketProvider('ws://localhost:1234', 'm', ydocument)
+    const type = ydocument.getText('monaco')
+
+    const editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+      value: '', // MonacoBinding overwrites this value with the content of type
+      language: "javascript",
+      theme:'monokai'
+    })
+
+    // Bind Yjs to the editor model
+    const monacoBinding = new MonacoBinding(type, editor.getModel(), new Set([editor]), provider.awareness)
+
+  },[])
+
+  return(
+    <div id="monaco-editor" className="container mt-5" style={{width:"2000px", height:"2000px"}}>
+
+    </div>
   )
+
+  // return (
+  //   <Router>
+  //     <div className="mt-5 d-flex flex-lg-row flex-column">
+  //         <div className="col-lg-2 col-12 mt-5">
+  //             <div className="d-flex flex-lg-column flex-row justify-content-md-center align-items-center">
+  //               <Link to='/room/1' className="">
+  //                 <button className="w-100 btn btn-dark m-5 ">
+  //                   Room 1
+  //                 </button>
+  //               </Link>
+  //               <Link to='/room/2' className="">
+  //                 <button className="w-100 btn btn-dark m-5" >
+  //                   Room 2
+  //                 </button>
+  //               </Link>
+  //               <Link to='/room/3' className="">
+  //                 <button className="w-100 btn btn-dark m-5" >
+  //                   Room 3
+  //                 </button>
+  //               </Link>
+  //             </div>
+  //         </div>
+  //         <Switch>
+  //         {/* {roomNo!==0?
+  //         <Editor room={roomNo} socket={io(endPoint)}></Editor>
+  //         :""} */}
+  //           <Route exact path='/room/:id' component={(props)=><Editor {...props} key={props.match.id}></Editor>}></Route>
+  //         </Switch>
+  //     </div>
+  //   </Router>
+  // )
 }
 
 
