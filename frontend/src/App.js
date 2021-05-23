@@ -30,13 +30,29 @@ const App=()=>{
 
   useEffect(()=>{
     const ydocument = new Y.Doc()
-    const provider = new WebsocketProvider('ws://localhost:1234', 'm', ydocument)
+    let endPt=""
+ 
+
+    const provider = new WebsocketProvider('wss://afternoon-sands-39384.herokuapp.com/', 'monakai', ydocument)
+    console.log(provider)
     const type = ydocument.getText('monaco')
 
     const editor = monaco.editor.create(document.getElementById('monaco-editor'), {
       value: '', // MonacoBinding overwrites this value with the content of type
-      language: "javascript",
-      theme:'monokai'
+      language: "java",
+      quickSuggestions: {
+        "other": true,
+       "comments": true,
+       "strings": true
+   },
+      parameterHints: {
+          enabled: true
+      },
+      ordBasedSuggestions: true,
+      suggestOnTriggerCharacters: true,
+      acceptSuggestionOnEnter: "on",
+      tabCompletion: "on",
+      wordBasedSuggestions: true
     })
 
     // Bind Yjs to the editor model
