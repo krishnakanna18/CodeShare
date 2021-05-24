@@ -1,0 +1,56 @@
+body{
+background-color: #0b0e11;
+overflow-x: hidden;
+}
+
+.loginMainOuter{
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+}
+
+.loginMainComponent{
+    margin: 0 auto;
+
+    background-color:#151a21;
+    border-radius: 8px;
+    padding: 40px;
+    color: white;
+    width: 400px;
+    
+}
+
+.loginMainComponentAuth{
+    background-color: #242c37;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: .5rem;
+    cursor: pointer;
+}
+
+.mainPageLogo{
+    position: fixed;
+    left:5%;
+    position:absolute;
+    bottom:0; 
+}
+
+.mainPageRight{
+    position:absolute;
+    
+    top:93%;
+    left:85%;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+}
+
+.mainPageRight:hover{
+
+    text-decoration: none;
+    color: white;
+
+}
+

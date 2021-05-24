@@ -1,251 +1,49 @@
-import React from 'react';
-import AceEditor from "react-ace";
-import { useState, useEffect } from 'react'
+import React, { Component } from 'react';
+import './css/app.css'
 
-import * as Y from 'yjs'
-import { WebsocketProvider } from 'y-websocket'
-import { MonacoBinding } from 'y-monaco'
-import * as monaco from 'monaco-editor'
+class App extends Component {
+  state = {  }
+  render() { 
+    return (  
+        <React.Fragment>
+          <div className="d-flex flex-column align-items-center justify-content-center loginMainOuter" >
+            <div className="d-flex flex-column  justify-content-center loginMainComponent">
+                <h3 className="col" style={{textAlign:"left"}}>Meet2Code</h3>
+                <span className="col" style={{textAlign:"left", fontSize:"14px"}}>Meet togther for <span style={{color:"#fd4d4d"}}>colloborative coding</span> and <span style={{color:"#fd4d4d"}}>document editing.</span></span>
+                <div className="mt-4 col d-flex flex-row justify-content-around align-items-center loginMainComponentAuth">
+                  <div className="col-1">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className=""><g clip-path="url(#clip0)"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C12.4184 0 16 3.67194 16 8.20234C16 11.8255 13.7104 14.8992 10.5336 15.9848C10.128 16.0656 9.984 15.8094 9.984 15.591C9.984 15.3206 9.9936 14.4374 9.9936 13.3398C9.9936 12.575 9.7376 12.0759 9.4504 11.8215C11.232 11.6183 13.104 10.9246 13.104 7.77422C13.104 6.87822 12.7936 6.14706 12.28 5.57266C12.3632 5.36546 12.6376 4.53116 12.2016 3.40156C12.2016 3.40156 11.5312 3.18178 10.004 4.24258C9.35149 4.0607 8.67738 3.96769 8 3.96641C7.32314 3.96763 6.64956 4.06064 5.9976 4.24258C4.4688 3.18178 3.7968 3.40156 3.7968 3.40156C3.3624 4.53116 3.6368 5.36546 3.7192 5.57266C3.208 6.14706 2.8952 6.87822 2.8952 7.77422C2.8952 10.9166 4.7632 11.6209 6.54 11.8281C6.3112 12.0329 6.104 12.3942 6.032 12.9246C5.576 13.1342 4.4176 13.497 3.704 12.2434C3.704 12.2434 3.2808 11.4553 2.4776 11.3977C2.4776 11.3977 1.6976 11.3873 2.4232 11.8961C2.4232 11.8961 2.9472 12.1481 3.3112 13.0961C3.3112 13.0961 3.7808 14.5601 6.0064 14.0641C6.0104 14.7497 6.0176 15.3958 6.0176 15.591C6.0176 15.8078 5.8704 16.0615 5.4712 15.9855C2.292 14.9015 0 11.8263 0 8.20234C0 3.67194 3.5824 0 8 0"></path></g><defs><clipPath id="clip0"><rect width="16" height="16"></rect></clipPath></defs></svg>
+                    </div>
+                  <div className="col-11"><span className="">Log in with Github</span></div>
+                </div>
+                <div className="mt-3 col d-flex flex-row justify-content-around  align-items-center loginMainComponentAuth">
+                  <div className="col-1">
+                    <img style={{width:"20px", height:"20px"}} src='/icons/google.svg' alt=""></img>
+                    </div>
+                  <div className="col-11"><span className="">Log in with Google</span></div>
+                </div>
+                <div className="mt-3 col d-flex flex-row justify-content-around  align-items-center loginMainComponentAuth">
+                  <div className="col-1">
+                    <img style={{width:"20px", height:"20px"}} src='/icons/twitter.svg' alt=""></img>
+                  </div>
+                  <div className="col-11">
+                    <span className="">Log in with Twitter</span>
+                  </div>
+                </div>
+            </div>  
+          </div>
 
-
-import {
-  BrowserRouter as Router,
-  Link,
-  Switch,
-  Route
-} from 'react-router-dom'
-
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/mode-javascript";
-
-import "ace-builds/src-noconflict/theme-monokai";
-import "ace-builds/src-noconflict/theme-xcode";
-import "ace-builds/src-noconflict/theme-solarized_dark";
-import "ace-builds/src-noconflict/ext-language_tools"
-import io from 'socket.io-client'
-
-
-
-const App=()=>{
-
-  useEffect(()=>{
-    const ydocument = new Y.Doc()
-    let endPt=""
+          <div className="mainPageLogo d-flex align-items-center justify-content-around flex-row">
+              <img src="icons/code.svg" className="col" onerror="this.src='icons/icons8-code-64.png'" alt="" style={{width:"79px", marginRight:"7%"}}/>
+              <h3  className="col" style={{color:"#FD4D4D"}}>Meet2Code</h3>
+          </div>
+          
+          <a className="mainPageRight d-flex align-items-center ustify-content-around flex-row"  rel="noreferrer" href="https://github.com/krishnakanna18/CodeShare" target="_blank">
+            <svg width="40" height="40" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className=""><g clip-path="url(#clip0)"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C12.4184 0 16 3.67194 16 8.20234C16 11.8255 13.7104 14.8992 10.5336 15.9848C10.128 16.0656 9.984 15.8094 9.984 15.591C9.984 15.3206 9.9936 14.4374 9.9936 13.3398C9.9936 12.575 9.7376 12.0759 9.4504 11.8215C11.232 11.6183 13.104 10.9246 13.104 7.77422C13.104 6.87822 12.7936 6.14706 12.28 5.57266C12.3632 5.36546 12.6376 4.53116 12.2016 3.40156C12.2016 3.40156 11.5312 3.18178 10.004 4.24258C9.35149 4.0607 8.67738 3.96769 8 3.96641C7.32314 3.96763 6.64956 4.06064 5.9976 4.24258C4.4688 3.18178 3.7968 3.40156 3.7968 3.40156C3.3624 4.53116 3.6368 5.36546 3.7192 5.57266C3.208 6.14706 2.8952 6.87822 2.8952 7.77422C2.8952 10.9166 4.7632 11.6209 6.54 11.8281C6.3112 12.0329 6.104 12.3942 6.032 12.9246C5.576 13.1342 4.4176 13.497 3.704 12.2434C3.704 12.2434 3.2808 11.4553 2.4776 11.3977C2.4776 11.3977 1.6976 11.3873 2.4232 11.8961C2.4232 11.8961 2.9472 12.1481 3.3112 13.0961C3.3112 13.0961 3.7808 14.5601 6.0064 14.0641C6.0104 14.7497 6.0176 15.3958 6.0176 15.591C6.0176 15.8078 5.8704 16.0615 5.4712 15.9855C2.292 14.9015 0 11.8263 0 8.20234C0 3.67194 3.5824 0 8 0"></path></g><defs><clipPath id="clip0"><rect width="16" height="16"></rect></clipPath></defs></svg>
+          </a>
+        </React.Fragment>
+    );
+  }
+}
  
-
-    const provider = new WebsocketProvider('wss://afternoon-sands-39384.herokuapp.com/', 'monakai', ydocument)
-    console.log(provider)
-    const type = ydocument.getText('monaco')
-
-    const editor = monaco.editor.create(document.getElementById('monaco-editor'), {
-      value: '', // MonacoBinding overwrites this value with the content of type
-      language: "java",
-      quickSuggestions: {
-        "other": true,
-       "comments": true,
-       "strings": true
-   },
-      parameterHints: {
-          enabled: true
-      },
-      ordBasedSuggestions: true,
-      suggestOnTriggerCharacters: true,
-      acceptSuggestionOnEnter: "on",
-      tabCompletion: "on",
-      wordBasedSuggestions: true
-    })
-
-    // Bind Yjs to the editor model
-    const monacoBinding = new MonacoBinding(type, editor.getModel(), new Set([editor]), provider.awareness)
-
-  },[])
-
-  return(
-    <div id="monaco-editor" className="container mt-5" style={{width:"2000px", height:"2000px"}}>
-
-    </div>
-  )
-
-  // return (
-  //   <Router>
-  //     <div className="mt-5 d-flex flex-lg-row flex-column">
-  //         <div className="col-lg-2 col-12 mt-5">
-  //             <div className="d-flex flex-lg-column flex-row justify-content-md-center align-items-center">
-  //               <Link to='/room/1' className="">
-  //                 <button className="w-100 btn btn-dark m-5 ">
-  //                   Room 1
-  //                 </button>
-  //               </Link>
-  //               <Link to='/room/2' className="">
-  //                 <button className="w-100 btn btn-dark m-5" >
-  //                   Room 2
-  //                 </button>
-  //               </Link>
-  //               <Link to='/room/3' className="">
-  //                 <button className="w-100 btn btn-dark m-5" >
-  //                   Room 3
-  //                 </button>
-  //               </Link>
-  //             </div>
-  //         </div>
-  //         <Switch>
-  //         {/* {roomNo!==0?
-  //         <Editor room={roomNo} socket={io(endPoint)}></Editor>
-  //         :""} */}
-  //           <Route exact path='/room/:id' component={(props)=><Editor {...props} key={props.match.id}></Editor>}></Route>
-  //         </Switch>
-  //     </div>
-  //   </Router>
-  // )
-}
-
-
-const Editor=({location,match})=>{
-
-
-  let [editorText,setEditorText]=useState("")
-  let endPt=""
-  if(window.location.host==="localhost:3000") endPt="http://localhost:9000"
-  else if(window.location.host==="192.168.0.13:3000") endPt="http://192.168.0.13:9000"
-
-  // endPt="https://floating-tor-72233.herokuapp.com"
-//  console.log(endPt)
-  let [endPoint]=useState(endPt)
-  let [socket]=useState(io(endPoint))
-  let [room,setRoom]=useState(0)
-  let [isSharing,setSharing]=useState(false)
-  let [isScreenCap,setScreenCap]=useState(false)
-
-
-  let theme=""
-  if(room===1) theme="monokai" 
-  else if(room===2) theme="xcode"
-  else if(room===3) theme="solarized_dark"
-
-
-  let screenShare=async()=>{
-    let captureStream = null;
-    try {
-      captureStream = await navigator.mediaDevices.getDisplayMedia({video: {
-        cursor: "always"
-      },
-      audio: false});
-    } catch(err) {
-      console.error("Error: " + err);
-    }
-    return captureStream;
-  }
-
-  let displayVideo=async()=>{
-
-    let vid=await screenShare()
-    setSharing(true)
-    // socket.emit('')
-    // let videoElem=document.getElementById("videoElementSrc")
-    // videoElem.srcObject =vid
-    // vid.ondatavailable=(e)=>{
-    //   socket.emit('shareVideo',{
-    //     room:`${room}`,
-    //     video:e.data
-    //   })
-    // }
-  }
-
-  useEffect(()=>{
-   
-    socket.on('resetEditor',val=>{
-        setEditorText(val.value)
-    })
-
-    socket.on('setVideo',async(video)=>{
-
-      if(isSharing===true){
-        await stopVideo()
-      }
-      setScreenCap(true)
-      let videoElem=document.getElementById("videoElementSrc")
-      videoElem.srcObject =video
-
-    })
-
-    return ()=>{
-      socket.emit('closeConnection',{room:`${room}`})
-    }
-// eslint-disable-next-line
-  },[])
-
-
-  useEffect(()=>{
-    socket.emit('closeConnection',{room:`${room}`})
-    setRoom(match.params.id)
-    socket.emit('joinRoom',{room:`${match.params.id}`})
-    socket.on('initialiseEditor',val=>{
-      setEditorText(val.value)
-    })
-  // eslint-disable-next-line
-  },[match.params.id])
-
-
-      
-  let setEditor=(value)=>{
-      setEditorText(value)
-      socket.emit('setEditor',{value:value,room:`${room}`})
-  }
-
-
-  let stopVideo=async()=>{
-    let videoElem=document.getElementById("videoElementSrc")
-    let tracks = videoElem.srcObject.getTracks();
-    tracks.forEach(track => track.stop());
-    videoElem.srcObject = null;
-    setSharing(false)
-  }
-
-  return(
-    <div className="col-lg-10 col-12 mt-5 d-flex flex-lg-row flex-column">
-        <div className="col-lg-6 justify-content-center row ">
-
-          <AceEditor
-            name={`trialEditor:${room}`}
-            theme={theme}
-            mode="javascript"
-            fontSize={20}
-            showGutter={true}
-            value={`${editorText}`}
-            highlightActiveLine={true}
-            editorProps={{ $blockScrolling: true }}
-            setOptions={{
-              enableBasicAutocompletion: true,
-              enableLiveAutocompletion: true,
-              enableSnippets: true,
-            }}
-            onInput={(e)=>{console.log(e)}}
-            debounceChangePeriod={500}
-            width={'800px'}
-            onChange={(value,e)=>{setEditor(value)} }
-          >
-          </AceEditor>
-
-          {isSharing===false?
-                <button className="btn btn-dark mt-5 w-50 mb-5" onClick={async()=>{await displayVideo()}}>Share your screen</button>
-                :
-                <button className="btn btn-dark mt-5 w-50 mb-5" onClick={async()=>{await stopVideo()}}>Stop sharing screen</button>
-                }
-
-  
-        </div>
-        <div className="col-lg-6 justify-content-center row" style={{maxWidth:"100%"}} >
-          <video id="videoElementSrc" autoPlay>
-
-          </video>
-        </div>
-    </div>
-
-       
-
-  )
-
-
-}
-
 export default App;
