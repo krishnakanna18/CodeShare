@@ -12,10 +12,13 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "fetch": "^1.1.0",
     "fs": "0.0.1-security",
     "http": "0.0.1-security",
     "mysql": "^2.18.1",
+    "node-fetch": "^2.6.1",
+    "path": "^0.12.7",
     "require": "^2.4.20",
     "socket.io": "^4.1.1"
   },

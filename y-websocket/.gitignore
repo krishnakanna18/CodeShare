@@ -1,3 +1,5 @@
 dist
 node_modules
 tmp
+backend/config.js
+frontend/src/config

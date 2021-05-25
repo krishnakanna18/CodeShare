@@ -1,0 +1,72 @@
+button, input, input[type="reset"] {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+.homePageTopBarLogo{
+
+    width: 69px;
+    height: 69px;
+    margin-right: 18px;
+}
+
+.homePageTopBarName{
+    font-size: 25px;
+}
+
+.homePageSearchBar{
+    background-color: #242c37;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 0 solid;
+    height: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.homePageSearchBarInput{
+    color: #5d7290;
+    outline: none;
+    -webkit-appearance: none; box-shadow: none !important; 
+}
+
+@media (max-width: 1000px){
+
+    .homePageTopBarName{
+        visibility: hidden;
+    }
+    .homePageSearchBarInput{
+        font-size: 14px;
+    }
+
+}
+
+@media (max-width: 650px){
+    .homePageTopBarLogoWrapper{
+        visibility: hidden;
+    }
+
+    .homePageTopBar{
+    }
+
+    .homePageSearchBarInput{
+        font-size: 14px;
+    }
+
+    .homePageSearchBar{
+        float: right;
+
+    }
+
+}
+
+.homePageUserDP{
+
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
