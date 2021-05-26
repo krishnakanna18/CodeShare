@@ -6,11 +6,17 @@ const { gitConfig , serverEndPoint, clientEndPoint} = require("../config");
 
 
 router.get('/isloggedin',(req,res)=>{
+    
     if(req.session.loggedin===true){
         res.status(200).json({user:req.session.user, loggedin:true})
     }
     else 
         res.status(401).json({user:{},loggedin:false})
+})
+
+router.post('/logout',(req,res)=>{
+    req.session.destroy();
+    return res.json({message:"Logged out Successfully"})
 })
 
 router.get('/git',(req,res)=>{

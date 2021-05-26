@@ -1,4 +1,4 @@
-button, input, input[type="reset"] {
+button, input, textarea, input[type="reset"] {
 	background: none;
 	color: inherit;
 	border: none;
@@ -11,7 +11,7 @@ button, input, input[type="reset"] {
 
     width: 69px;
     height: 69px;
-    margin-right: 18px;
+    margin-right: 10px;
 }
 
 .homePageTopBarName{
@@ -45,28 +45,203 @@ button, input, input[type="reset"] {
 
 }
 
-@media (max-width: 650px){
-    .homePageTopBarLogoWrapper{
-        visibility: hidden;
-    }
-
-    .homePageTopBar{
-    }
-
-    .homePageSearchBarInput{
-        font-size: 14px;
-    }
-
-    .homePageSearchBar{
-        float: right;
-
-    }
-
-}
-
 .homePageUserDP{
 
     width: 40px;
     height: 40px;
     border-radius: 50%;
 }
+
+
+.profileDropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .profileDropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    width: 100%;
+    width: 200px;
+    background-color: #151a21;
+    border-radius: 8px;
+    border-color: #0b0e11;
+    overflow: hidden;
+    transform: translate(-50%, 0px);
+    border-width: 1px;
+    color: #dee3ea;
+    font-family: Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  }
+
+  .logOutButton{
+    background-color: #242c37;
+    font-weight: 200;
+    padding-top: 8px;
+   padding: 12px;
+   
+   border-radius: 0px 0px 8px 8px;
+} 
+
+.profileDropdown-content-list{
+    padding-top:10px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.mainPageCreateorJoinRoom{
+    margin-top: 30px;
+}
+
+
+.mainPageCreateRoom{
+
+    background-color: #151a21;
+    border-radius: 8px;
+    outline: none;
+    padding: 40px;
+    max-height: 80vh;
+    width: 90%;
+    max-width: 530px;
+    font-size: 14px;
+
+}
+
+.mainPageCreateRoomDivider{
+
+    background-color: #151a21;
+    outline: none;
+    margin-right: 15px;
+    max-height: 80vh;
+    height: 350px;
+    width: 2px;
+}
+
+.mainPageCreateRoomHeader{
+    color: #dee3ea;
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.mainPageCreateRoomDesc{
+    color: #5d7290;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.mainPageCreateRoomFormName{
+
+    color: #5d7290;
+    background-color: #242c37;
+    border-radius: 8px;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.mainPageCreateRoomFormType{
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 8px;
+    background-color: #242c37;
+    background-repeat: no-repeat;
+    border: none;
+    color: #5d7290;
+
+}
+
+.mainPageCreateRoomFormType:focus{
+
+    outline: none;
+}
+
+.mainPageCreateRoomFormTypeWrapper{
+
+    padding-right: 12px;    
+}
+
+.mainPageCreateRoomFormText{
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #dee3ea;
+    border-radius: 8px;
+    background-color: #242c37;
+    resize: vertical;
+    width: 100%;
+}
+
+.mainPageCreateRoomFormSubmit{
+    width: 100%;
+    background-color: #fd4d4d;
+    border-radius: .5rem;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    color: white;
+}
+
+@media (max-width: 989px){
+    .mainPageCreateRoomDivider{
+        background-color: #151a21;
+        outline: none;
+        margin-right: 0px;
+        height: 2px;
+        width: 1000px;
+    }
+
+    .mainPageCreateorJoinRoom{
+        margin-top: 30px;
+    }
+    
+}
+
+  @media (max-width: 450px){
+
+
+    .homePageTopBarLogoWrapper{
+        visibility: hidden;
+    }
+
+    .homePageSearchBarInputWrapper{
+        margin-left: -50px;
+        width: 100%;
+    }
+
+    .homePageUserDP{
+
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+
+    .homePageTopBar{
+        margin-left: -10px;
+    }
+
+    .homePageSearchBarInput{
+
+        font-size: 12px;
+    }
+
+}
+
+  @media (max-width: 575px){
+    .profileDropdown-content{
+        transform: translate(-82%, 0px);
+        zoom: 0.8;
+    }
+  }
+
+ 
