@@ -1,14 +1,34 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import GoogleLogin from 'react-google-login'
 import '../css/app.css'
 import serverEndpoint from '../config'
 
 const Login=()=>{
 
+    //Redirect to server for git oauth
     const gitAuth=(e)=>{
         console.log("Getting Access Token from git....");
         window.open(`${serverEndpoint}/oauth/git`,'_self');
       }
+    
+    //Send information to server to login session
+    let googleAuth=async(response)=>{
+        if(response.error===undefined || response.error===null){
+          let {profileObj}=response
+          let user={login:profileObj.name,
+                    imageUrl:profileObj.imageUrl,
+                   }
+          let resp=await fetch(`${serverEndpoint}/oauth/google`,{
+            method:"post",
+            credentials:"include",
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({user:user,access_token:response.accessToken})
+          })
+          resp=await resp.json()
+          if(resp.message==="Success")    //If login success redirect to main page
+            window.open(`/`,'_self')
+        }
+    }
     
       return (  
     <div>
@@ -22,25 +42,31 @@ const Login=()=>{
                   </div>
                 <div className="col-11"><span className="">Log in with Github</span></div>
               </div>
-              <div className="mt-3 col d-flex flex-row justify-content-around  align-items-center loginMainComponentAuth">
-                <div className="col-1">
+                <GoogleLogin 
+                    clientId="363691655533-93fci0que3b37rmbolgpf4e0tejcer97.apps.googleusercontent.com"
+                    onSuccess={googleAuth}
+                    onFailure={googleAuth}
+                    render={renderProps =>{ 
+                      return (
+                      <div className="mt-3 col d-flex flex-row justify-content-around  align-items-center loginMainComponentAuth" onClick={renderProps.onClick}>
+                        <div className="col-1">
+                            <img style={{width:"20px", height:"20px"}} src='/icons/google.svg' alt=""></img>
+                        </div>
+                        <div className="col-11"><span className="">Log in with Google</span></div>
+                      </div>
+                    )}
+                  }
+                    cookiePolicy={'single_host_origin'}
+                />
+                {/* <div className="col-1">
                   <img style={{width:"20px", height:"20px"}} src='/icons/google.svg' alt=""></img>
                   </div>
-                <div className="col-11"><span className="">Log in with Google</span></div>
-              </div>
-              <div className="mt-3 col d-flex flex-row justify-content-around  align-items-center loginMainComponentAuth">
-                <div className="col-1">
-                  <img style={{width:"20px", height:"20px"}} src='/icons/twitter.svg' alt=""></img>
-                </div>
-                <div className="col-11">
-                  <span className="">Log in with Twitter</span>
-                </div>
-              </div>
+                <div className="col-11"><span className="">Log in with Google</span></div> */}
           </div>  
         </div>
 
         <div className="mainPageLogo d-flex align-items-center justify-content-around flex-row">
-            <img src="icons/code.svg" className="col"  alt="" style={{width:"79px", marginRight:"7%"}}/>
+            <img src="homeLogo.png" className="col"  alt="" style={{width:"79px", marginRight:"7%", borderRadius:"50%", height:"70px"}}/>
             <h3  className="col" style={{color:"#FD4D4D"}}>Meet2Code</h3>
         </div>
         

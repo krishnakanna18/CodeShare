@@ -16,11 +16,13 @@
     "fetch": "^1.1.0",
     "fs": "0.0.1-security",
     "http": "0.0.1-security",
+    "mongoose": "^5.12.11",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",
     "require": "^2.4.20",
-    "socket.io": "^4.1.1"
+    "socket.io": "^4.1.1",
+    "uuid": "^8.3.2"
   },
   "engines": {
     "node": "14.17.0"

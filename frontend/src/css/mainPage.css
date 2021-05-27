@@ -103,10 +103,21 @@ button, input, textarea, input[type="reset"] {
     background-color: #151a21;
     border-radius: 8px;
     outline: none;
-    padding: 40px;
+    padding: 20px;
     max-height: 80vh;
     width: 90%;
     max-width: 530px;
+    font-size: 14px;
+
+}
+
+.mainPageCreateRoomOff{
+    background-color: #151a21;
+    border-radius: 8px;
+    outline: none;
+    padding: 20px;
+    max-height: 80vh;
+    width: 30%;
     font-size: 14px;
 
 }
@@ -117,13 +128,20 @@ button, input, textarea, input[type="reset"] {
     outline: none;
     margin-right: 15px;
     max-height: 80vh;
-    height: 350px;
+    height: 100px;
     width: 2px;
 }
 
 .mainPageCreateRoomHeader{
     color: #dee3ea;
     font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.mainPageCreateRoomHeaderOff{
+    color: #dee3ea;
+    font-size: 18px;
     font-weight: 500;
     margin-bottom: 10px;
 }
@@ -179,6 +197,18 @@ button, input, textarea, input[type="reset"] {
     width: 100%;
 }
 
+.mainPageCreateRoomFormPassword{
+    background-color: #242c37;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #dee3ea;
+    border-radius: 8px;
+}
+
+
 .mainPageCreateRoomFormSubmit{
     width: 100%;
     background-color: #fd4d4d;
@@ -192,6 +222,7 @@ button, input, textarea, input[type="reset"] {
     color: white;
 }
 
+
 @media (max-width: 989px){
     .mainPageCreateRoomDivider{
         background-color: #151a21;
@@ -203,6 +234,10 @@ button, input, textarea, input[type="reset"] {
 
     .mainPageCreateorJoinRoom{
         margin-top: 30px;
+    }
+
+    .mainPageCreateRoomHeader{
+        font-size: 15px;
     }
     
 }
@@ -234,6 +269,10 @@ button, input, textarea, input[type="reset"] {
 
         font-size: 12px;
     }
+    .mainPageCreateRoomHeader{
+        font-size: 13px;
+    }
+    
 
 }
 

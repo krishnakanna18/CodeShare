@@ -1,6 +1,7 @@
 const express=require("express");
       router=express.Router();
-      fetch=require("node-fetch")
+      fetch=require("node-fetch");
+      mongoose=require("mongoose");
 
 const { gitConfig , serverEndPoint, clientEndPoint} = require("../config");
 
@@ -36,7 +37,8 @@ router.get('/gitCallBack/getToken',async(req,res)=>{
             headers:{'Accept':'application/json'},
       })
         resp=await resp.json()
-     
+        req.session.access_token=resp.access_token
+      
         //Request to get the authenticated user info
         resp=await fetch('https://api.github.com/user',{
             method:"get",
@@ -46,7 +48,7 @@ router.get('/gitCallBack/getToken',async(req,res)=>{
 
         //Loggin the user in by creating session
         req.session.loggedin=true
-        req.session.user={login:resp.login, avatar:resp.avatar_url, url:resp.url}
+        req.session.user={login:resp.login, imageUrl:resp.avatar_url, url:resp.url}
     }
     catch(e){
         req.session.loggedin=false
@@ -64,4 +66,10 @@ router.get('/gitCallBack',(req,res)=>{
     }
 })
 
+router.post('/google',(req,res)=>{
+    req.session.loggedin=true
+    req.session.user=req.body.user
+    req.session.access_token=req.body.access_token
+    res.status(200).json({"message":"Success"})
+})
 module.exports=router

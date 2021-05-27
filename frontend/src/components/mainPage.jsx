@@ -2,17 +2,24 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import serverEndpoint from '../config'
 import '../css/mainPage.css'
+import { io } from "socket.io-client";
+import { useHistory } from "react-router-dom";
 
-// meet2code-314917 google project id
 
 const MainPage=(props)=>{
 
     let [ddst,setddst]=useState(false);
+    let [prShowJoin,setprShowJoin]=useState(false);
+    let [prShowCreate,setprShowCreate]=useState(false);
+    let [joinShow,setJoinShow]=useState(false);
+    let [createShow,setCreateShow]=useState(false);
+    let [socket,setSocket]=useState(io(`${serverEndpoint}`))
+
+    let history=useHistory()
 
     useEffect(()=>{
         console.log(props)
     },[props])
-
 
     useEffect(()=>{
 
@@ -32,6 +39,74 @@ const MainPage=(props)=>{
         props.logOutUser()
     }
 
+    let showPwd=(type)=>{
+        let option;
+        if(type==="create")
+            option=document.getElementById("mainPageCreateRoomFormType")
+        else if(type==="join")
+            option=document.getElementById("mainPageJoinRoomFormType")
+        if(option!==undefined && option!==null){
+            if(type==="create"){
+                if(option.value==="private")
+                    setprShowCreate(true);
+                else
+                    setprShowCreate(false);
+            }
+            else if(type==="join"){
+                if(option.value==="private")
+                    setprShowJoin(true);
+                else
+                    setprShowJoin(false);
+            }
+        }
+    }
+
+    let toggleOpen=(type)=>{
+        let form;
+        if(type==="create"){
+            let createForm=document.getElementById("mainPageCreateRoomPadding")
+            if(createShow===true)
+                createForm.style.padding="20px"
+            else
+                createForm.style.padding="40px"
+            setCreateShow(!createShow)
+        }
+        else if(type==="join"){
+            let joinForm=document.getElementById("mainPageJoinRoomPadding")
+            if(joinShow===true)
+                joinForm.style.padding="20px"
+            else
+                joinForm.style.padding="40px"
+            setJoinShow(!joinShow)
+        }
+
+    }
+    let createRoom=async(formData)=>{
+
+        let body={}
+        for(let pair of formData)
+            body[`${pair[0]}`]=pair[1]
+
+        socket.emit('createRoom',{...body},(roomId)=>{
+            if(roomId!==undefined && roomId!==null){
+                console.log(roomId);
+                history.push(`/room/${roomId}`)
+            }
+            else{
+                //Display Creation of room failed
+            }
+        })
+
+        // let resp=await fetch(`${serverEndpoint}/room`,{
+        //     method:"post",
+        //     credentials:"include",
+        //     headers:{'Content-Type':'application/json'},
+        //     body:JSON.stringify(body)
+        // })
+        // resp=await resp.json()
+    }
+
+
     return (
         <React.Fragment>
         <div>
@@ -39,7 +114,7 @@ const MainPage=(props)=>{
 
                 <div className="container-lg col-sm-3 col-0">
                     <div className="d-flex flex-row align-items-center homePageTopBarLogoWrapper">
-                        <img src="icons/code.svg" className="homePageTopBarLogo"  alt="" />
+                        <img src="homeLogo.png" className="homePageTopBarLogo"  alt="" style={{borderRadius:"50%"}}/>
                         <h3  className="homePageTopBarName" style={{color:"#FD4D4D"}}>Meet2Code</h3>
                     </div>
                 </div>
@@ -60,7 +135,7 @@ const MainPage=(props)=>{
                 <div className="col-sm-3 col-1 container-lg justify-content-center profileDropdown" style={{textAlign:"center", cursor:"pointer"}}>
                     
                     <div className="profileDropdown"  onClick={()=>{toggleDropDown()}}>
-                        <img src={`${props.user.avatar}`} className="homePageUserDP " ></img>
+                        <img src={`${props.user.imageUrl}`} className="homePageUserDP " ></img>
                         <div className="profileDropdown-content mt-2" id="profileDropdown-content">
                             <div className="profileDropdown-content-list d-flex flex-column ">
                                 <div className="col d-flex flex-row align-items-center justify-content-around">
@@ -80,55 +155,121 @@ const MainPage=(props)=>{
 
         {/* Start a room or join a room */}
         <div>
-            <div className="mainPageCreateorJoinRoom container d-flex flex-lg-row flex-column align-items-center">
-                <div className="col-lg-5 col-12" style={{margin:"auto"}}>
-                    <div className="container-lg mainPageCreateRoom">
+            <div className="mainPageCreateorJoinRoom container d-flex flex-lg-row flex-column align-items-start">
+                <div className="col-lg-6 col-12" >
+                    <div className="container-lg mainPageCreateRoom" id="mainPageCreateRoomPadding">
                         <div className="d-flex flex-column">
-                            <div className="mainPageCreateRoomHeader">
-                                New Room
+                            <div className="mainPageCreateRoomHeaderOff d-flex flex-row justify-content-between align-items-center" onClick={(e)=>{toggleOpen("create")}} style={{cursor:"pointer"}}>
+                                <span className="col-5">New Room</span>
+                                <img className="col-2" src='./icons/drop-down.png' style={{width:"16px", height:"16px"}}
+                                
+                                ></img>
                             </div>
-                            <div className="mainPageCreateRoomDesc">
-                                Fill the following fields to start a new room
-                            </div>
-                            <div className="mainPageCreateRoomForm"> 
-                                <form action="#" method="post">
-                                    <div className="d-flex flex-column">
-                                        <div className="d-flex flex-row justify-content-between align-items-center">
-                                            <div className="col-8 mainPageCreateRoomFormName">
-                                                <input className="" autoComplete="off" name="name" placeholder="Room name" maxLength="20"></input>
+                            {createShow===true?
+                            <div id="mainPageCreateRoomToggler" >
+                                <div className="mainPageCreateRoomDesc">
+                                    Fill the following fields to start a new room
+                                </div>
+                                <div className="mainPageCreateRoomForm"> 
+                                    <form  id="mainPageCreateRoomForm">
+                                        <div className="d-flex flex-column">
+                                            <div className="d-flex flex-row justify-content-between align-items-center">
+                                                <div className="col-8 mainPageCreateRoomFormName">
+                                                    <input className="" autoComplete="off" name="name" placeholder="Room name" maxLength="20"></input>
+                                                </div>
+                                                <div className="col-3 mainPageCreateRoomFormTypeWrapper">
+                                                    <select className="mainPageCreateRoomFormType" name="type" id="mainPageCreateRoomFormType" onClick={(e)=>{showPwd("create")}}>
+                                                        <option value="public">Public</option>
+                                                        <option value="private">Private</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div className="col-3 mainPageCreateRoomFormTypeWrapper">
-                                                <select className="mainPageCreateRoomFormType">
-                                                    <option value="public">Public</option>
-                                                    <option value="private">Private</option>
-                                                </select>
+
+                                        {prShowCreate===true?
+                                        <div className="col-5 mt-3 mainPageCreateRoomFormPassword">
+                                                <input className="" type="password" name="password" placeholder="Room Password">
+                                                </input>
+                                            </div>:""}
+
+                                            <div className="col-12 mt-3">
+                                                <textarea name="description" className="mainPageCreateRoomFormText" rows="3" maxLength="600" placeholder="Room Description"></textarea>
+                                            </div>
+                                            <div className="mt-3 col-6">
+                                                <button className="mainPageCreateRoomFormSubmit" type="submit"
+                                                onClick={async(e)=>{
+                                                    e.preventDefault()
+                                                    const formData = new FormData(document.getElementById('mainPageCreateRoomForm'));
+                                                    await createRoom(formData)
+                                                }}
+                                                >
+                                                    Create Room
+                                                </button>
                                             </div>
                                         </div>
-                                        <div className="col-12 mt-3">
-                                            <textarea name="description" className="mainPageCreateRoomFormText" rows="3" maxLength="600" placeholder="Room Description"></textarea>
-                                        </div>
-                                        <div className="mt-3 col-6">
-                                            <button className="mainPageCreateRoomFormSubmit">
-                                                Create Room
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
+                            :""}
                         </div>
                     </div>
                 </div>
-                <div className="col-lg-2 col-12 mt-lg-0 mb-lg-0 mt-3 mb-3  d-flex flex-lg-column flex-row align-items-center justify-content-center" >
-                    <div className="mainPageCreateRoomDivider" >
+       
+                <div className="mt-lg-0 mt-3 col-lg-6 col-12" >
+                    <div className="container-lg mainPageCreateRoom" id="mainPageJoinRoomPadding">
+                        <div className="d-flex flex-column">
+                            <div className="mainPageCreateRoomHeader d-flex flex-row justify-content-between align-items-center" onClick={(e)=>{toggleOpen("join")}} style={{cursor:"pointer"}}>
+                                <span className="col-5">Join a Room</span>
+                                <img className="col-2" src='./icons/drop-down.png' style={{width:"16px", height:"16px"}} 
+                                
+                                ></img>
+                            </div>
+                            {joinShow===true?
+                            <div id="mainPageJoinRoomToggler">
+                                <div className="mainPageCreateRoomDesc">
+                                    Enter the name of the room and password for private rooms.
+                                </div>
+                                <div className="mainPageCreateRoomForm"> 
+                                    <form  id="mainPageJoinRoomForm">
+                                        <div className="d-flex flex-column">
+                                                <div className="d-flex flex-row justify-content-between align-items-center">
+                                                    <div className="col-8 mainPageCreateRoomFormName">
+                                                        <input className="" autoComplete="off" name="name" placeholder="Room Id"></input>
+                                                    </div>
+                                                    <div className="col-3 mainPageCreateRoomFormTypeWrapper">
+                                                        <select className="mainPageCreateRoomFormType" name="type" id="mainPageJoinRoomFormType" onClick={(e)=>{showPwd("join")}}>
+                                                            <option value="public">Public</option>
+                                                            <option value="private">Private</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
 
-                    </div>
-                </div>
-                <div className="col-lg-5 col-12" style={{margin:"auto"}}>
-                    <div className="container-lg mainPageCreateRoom">
-
+                                            {prShowJoin===true?
+                                            <div className="col-5 mt-3 mainPageCreateRoomFormPassword">
+                                                    <input className="" type="password" name="password" placeholder="Room Password">
+                                                    </input>
+                                                </div>:""}
+                                            <div className="mt-3 col-6">
+                                                <button className="mainPageCreateRoomFormSubmit" type="submit"
+                                                onClick={async(e)=>{
+                                                    e.preventDefault()
+                                                    const formData = new FormData(document.getElementById('mainPageJoinRoomForm'));
+                                                    console.log(...formData)
+                                                    // await createRoom(formData)
+                                                }}
+                                                >
+                                                    Join Room
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            :""}
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
         </React.Fragment>
     )

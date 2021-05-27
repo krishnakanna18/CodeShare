@@ -3,6 +3,11 @@ import { useState, useEffect } from 'react';
 import serverEndpoint from './config'
 import MainPage from './components/mainPage'
 import Login from './components/login'
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch
+} from 'react-router-dom'
 
 const App=()=>{
 
@@ -57,7 +62,7 @@ const App=()=>{
       return <div></div>
 
     if(loggedin===false){
-      return <Login></Login>
+      return <Login ></Login>
     }
     else{
       return  <MainPage user={{...user}} loggedin={loggedin} logOutUser={logOutUser}></MainPage>
@@ -66,7 +71,19 @@ const App=()=>{
 
   return (  
     <React.Fragment>
-      {renderHome()}
+      <Router>
+        <Switch>
+            <Route exact path='/'>
+              {renderHome()}
+            </Route> 
+            <Route exact path='/room/:id' component={()=>{
+              return <div>Room</div>
+            }}>
+              
+            </Route>
+        </Switch>
+      </Router>
+      
     </React.Fragment>
 );
 }
