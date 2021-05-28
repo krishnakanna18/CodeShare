@@ -7,6 +7,16 @@ button, input, textarea, input[type="reset"] {
 	cursor: pointer;
 	outline: inherit;
 }
+.enableOverlay {
+    /* background-color:#000; */
+    opacity:0.5;
+    cursor: none;
+  }
+
+.disableOverlay{
+
+}
+
 .homePageTopBarLogo{
 
     width: 69px;
@@ -222,6 +232,21 @@ button, input, textarea, input[type="reset"] {
     color: white;
 }
 
+.modalAlreadyJoined{
+    background-color: #151a21;
+    color: white;
+}
+
+.modalAlreadyJoinedButton{
+    background-color: #fd4d4d;
+    border-radius: .5rem;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+
+}
 
 @media (max-width: 989px){
     .mainPageCreateRoomDivider{

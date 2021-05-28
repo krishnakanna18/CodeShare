@@ -9,7 +9,9 @@ const express=require("express");
       room=require('./Routers/room');
       path=require('path');
       session = require("express-session");
-      Room=require('./Schemas/room')
+      Room=require('./Schemas/room');
+      User=require('./Schemas/user');
+
 const { v4: uuid } = require('uuid');
 
 app.use(cors({credentials:true, origin:["http://localhost:3000","http://192.168.0.13:3000","https://60a2be5a6ea5e300a1a9aca2--elegant-edison-5499d4.netlify.app"]}));
@@ -57,7 +59,8 @@ let isLoggedin=(req,res,next)=>{
     else
     {     
           // res.status(404).json({"log_data":"Not logged in",...res.locals})
-          res.status(401).send("Not logged in");
+          res.status(401);
+          return res.redirect(`${clientEndPoint}`)
     }
 }
 
@@ -81,22 +84,72 @@ const io=socket(server,{
     }
 });
 
+
+const getClients=()=>{
+    
+}
+
 io.on('connection',(socket)=>{
 
     socket.on('createRoom',async(arg,redirect)=>{
+        
         let roomId=uuid();
-        console.log(roomId)
         socket.join(`${roomId}`);
         try{
-        let room=new Room({
-            ...arg,
-            roomId:roomId
-        })
-        room=await room.save()
-        redirect(roomId);
+            //Get the details of user who emitted the event
+            let user=await User.findById(arg.host)
+
+            if(user['room']!==undefined && user['room']!==null){       //Check if user is already in a room
+                console.log(401)
+                redirect(user['room'],401)
+                return
+            }
+            //Create room with the arguments sent along with the newly created roomId
+            let room=new Room({
+                ...arg,
+                roomId:roomId,
+            })
+            room=await room.save()
+
+            //Update the user info with the new socket id and the room id
+            user['room']=room._id
+            user['socketId']=socket.id
+            await user.save()
+
+            redirect(roomId,200);   //Created Successfully redirect with 200
         }
         catch(e){
-            redirect(undefined)
+            console.log(e)
+            redirect(undefined,404)
+        }
+    })
+
+    socket.on('leaveRoom',async(arg,redirect)=>{
+        try{
+            //Get the details of user who emitted the event
+            let user=await User.findById(arg.host);
+            let room=await Room.findById(user['room'])
+            if(room!==undefined && room!==null){
+                //Delete the room if the host has ended the meeting
+                if(room['host']==arg.host){
+                    // socket.to(room['roomId']).emit('endRoom')
+                    await Room.findByIdAndDelete(room._id)
+                }
+                //Remove the participant from the room
+                else{
+                    room['participants'].splice(room['participants'].indexOf(user._id),1);
+                    console.log(room);
+                    await room.save();
+                }
+                //Remove the room from the user
+                user['room']=undefined
+                await user.save()
+                redirect("Success",200)
+            }
+        }
+        catch(e){
+            console.log(e)
+            redirect(undefined,404)
         }
     })
 

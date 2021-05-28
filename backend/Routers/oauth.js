@@ -2,11 +2,11 @@ const express=require("express");
       router=express.Router();
       fetch=require("node-fetch");
       mongoose=require("mongoose");
+      User=require("../Schemas/user");
 
 const { gitConfig , serverEndPoint, clientEndPoint} = require("../config");
 
-
-router.get('/isloggedin',(req,res)=>{
+router.get('/isloggedin',async(req,res)=>{
     
     if(req.session.loggedin===true){
         res.status(200).json({user:req.session.user, loggedin:true})
@@ -46,9 +46,20 @@ router.get('/gitCallBack/getToken',async(req,res)=>{
         })
         resp=await resp.json()
 
+        let user=await User.findOne({login:resp.login, oauth:"git"})
+        // console.log(user)
+        if(user===undefined || user===null){
+            user=new User({
+                login:resp.login,
+                oauth:"git"
+            })
+            await user.save()
+        }
+
         //Loggin the user in by creating session
         req.session.loggedin=true
-        req.session.user={login:resp.login, imageUrl:resp.avatar_url, url:resp.url}
+        req.session.user={login:resp.login, imageUrl:resp.avatar_url, url:resp.url,_id:user._id}
+      
     }
     catch(e){
         req.session.loggedin=false
@@ -66,10 +77,23 @@ router.get('/gitCallBack',(req,res)=>{
     }
 })
 
-router.post('/google',(req,res)=>{
+router.post('/google',async(req,res)=>{
+  
+     
+    let user=await User.findOne({login:req.body.user.login, oauth:"google"})
+    // console.log(user)
+    if(user===undefined || user===null){
+        user=new User({
+            login:req.body.user.login,
+            oauth:"google"
+        })
+        await user.save()
+    }
     req.session.loggedin=true
     req.session.user=req.body.user
     req.session.access_token=req.body.access_token
+    req.session.user._id=user._id
+
     res.status(200).json({"message":"Success"})
 })
 module.exports=router

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import serverEndpoint from './config'
 import MainPage from './components/mainPage'
 import Login from './components/login'
+import Room from './components/room'
 import {
   BrowserRouter as Router,
   Route,
@@ -76,9 +77,7 @@ const App=()=>{
             <Route exact path='/'>
               {renderHome()}
             </Route> 
-            <Route exact path='/room/:id' component={()=>{
-              return <div>Room</div>
-            }}>
+            <Route exact path='/room/:id' component={(props)=><Room {...props}></Room>}>
               
             </Route>
         </Switch>
