@@ -9,6 +9,7 @@ const express=require("express");
       room=require('./Routers/room');
       path=require('path');
       session = require("express-session");
+      mongoose = require("mongoose");
       Room=require('./Schemas/room');
       User=require('./Schemas/user');
 
@@ -91,6 +92,7 @@ const getClients=()=>{
 
 io.on('connection',(socket)=>{
 
+    //Creating a room by the host
     socket.on('createRoom',async(arg,redirect)=>{
         
         let roomId=uuid();
@@ -101,7 +103,8 @@ io.on('connection',(socket)=>{
 
             if(user['room']!==undefined && user['room']!==null){       //Check if user is already in a room
                 console.log(401)
-                redirect(user['room'],401)
+                let room=await Room.findById(user['room'])
+                redirect(room.roomId,401)
                 return
             }
             //Create room with the arguments sent along with the newly created roomId
@@ -124,6 +127,43 @@ io.on('connection',(socket)=>{
         }
     })
 
+    //Join an existing room
+    socket.on('joinRoom',async(arg,redirect)=>{
+        try{
+            let room=await Room.findOne({roomId: arg.id}) //Get the room details
+            if(room===undefined || room===null){    //Room doesn't exist
+                redirect(undefined,404)
+                return
+            }
+            //Get the details of user who emitted the event
+            let user=await User.findById(arg.participant)
+
+            if(user['room']!==undefined && user['room']!==null && user['room']!==room._id){       //Check if user is already in a room and not in the given room
+                redirect(room.roomId,401)
+                return
+            }
+            if(room['type']==="private" && room['password']!==arg.password){        //If private and password is not correct
+                redirect(undefined, 403);    
+                return;           
+            }
+            if(user['room']!=room._id){                         //If the user doesn't already exist
+
+                room['participants'].push(user._id);
+                user['room']=room._id
+            }
+            //Update user and room details and call client redirect function
+            await room.save();          
+            await user.save();  
+            redirect(room.roomId,200); 
+        }
+        catch(e){
+            console.log(e)
+            redirect(undefined,404)
+        }
+
+    })
+
+    //Leave room
     socket.on('leaveRoom',async(arg,redirect)=>{
         try{
             //Get the details of user who emitted the event
@@ -131,8 +171,10 @@ io.on('connection',(socket)=>{
             let room=await Room.findById(user['room'])
             if(room!==undefined && room!==null){
                 //Delete the room if the host has ended the meeting
-                if(room['host']==arg.host){
-                    // socket.to(room['roomId']).emit('endRoom')
+                if(room['host']===mongoose.Types.ObjectId(arg.host)){
+                    console.log(room['host'],mongoose.Types.ObjecId(arg.host))
+                    //Emit an end room event to all participants of the room 
+                    // socket.to(room['roomId']).emit('endRoom')    
                     await Room.findByIdAndDelete(room._id)
                 }
                 //Remove the participant from the room

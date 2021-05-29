@@ -73,6 +73,10 @@ const MainPage=(props)=>{
         }
         else if(type==="join"){
             let joinForm=document.getElementById("mainPageJoinRoomPadding")
+            let infoText=document.getElementById("infoTextJoinRoom")
+            if(infoText!==null){
+                infoText.innerText=""
+            }
             if(joinShow===true)
                 joinForm.style.padding="20px"
             else
@@ -84,6 +88,7 @@ const MainPage=(props)=>{
 
     //Join the already existing room.
     let joinExistingRoom=(id)=>{
+        console.log(id)
         history.push(`/room/${id}`)
     }
 
@@ -111,11 +116,49 @@ const MainPage=(props)=>{
             }
             else if(status===401){
                 //User is already in a room.
-                // var myModal = new bootstrap.Modal(document.getElementById('myModal'), options)
-                // id="w-change-location" data-toggle="modal" data-target="#locModal"
                 showModal(roomId)
             }
         })
+    }
+
+    //Join room
+    let joinRoom=async(formData)=>{
+
+        //Form validation pending
+        let body={}
+        for(let pair of formData)
+            body[`${pair[0]}`]=pair[1]
+        console.log(body)
+        let infoText=document.getElementById("infoTextJoinRoom")
+        //Emit the details of the room and join the room.
+        socket.emit('joinRoom',{...body,participant:props.user._id},(roomId,status)=>{
+
+            if(status===401){
+                //User is already in a room.
+                showModal(roomId)
+                return
+            }
+            //If the password given is wrong
+            else if(status===403){
+                
+                if(infoText!==null){
+                    infoText.innerText="Incorrect Password Provided"
+                }
+                return
+            }
+            //If room doesn't exist
+            else if(status===404){
+                if(infoText!==null){
+                    infoText.innerText="Room Doesn't exist"
+                }
+            }
+
+            //Successful join
+            else if(status===200 && roomId!==undefined && roomId!==null){
+                history.push(`/room/${roomId}`)
+            }
+        })
+
     }
 
     let showModal=(roomId)=>{
@@ -303,7 +346,7 @@ const MainPage=(props)=>{
                                         <div className="d-flex flex-column">
                                                 <div className="d-flex flex-row justify-content-between align-items-center">
                                                     <div className="col-8 mainPageCreateRoomFormName">
-                                                        <input className="" autoComplete="off" name="name" placeholder="Room Id"></input>
+                                                        <input className="" autoComplete="off" name="id" placeholder="Room Id"></input>
                                                     </div>
                                                     <div className="col-3 mainPageCreateRoomFormTypeWrapper">
                                                         <select className="mainPageCreateRoomFormType" name="type" id="mainPageJoinRoomFormType" onClick={(e)=>{showPwd("join")}}>
@@ -317,15 +360,18 @@ const MainPage=(props)=>{
                                             <div className="col-5 mt-3 mainPageCreateRoomFormPassword">
                                                     <input className="" type="password" name="password" placeholder="Room Password">
                                                     </input>
-                                                </div>:""}
+                                            </div>:""}
+
+                                            <div className="mt-1 " id="infoTextJoinRoom" style={{color:"#fd4d4d", fontSize:"14px"}}>
+
+                                            </div>
+
                                             <div className="mt-3 col-6">
                                                 <button className="mainPageCreateRoomFormSubmit" type="submit"
                                                 onClick={async(e)=>{
                                                     e.preventDefault()
                                                     const formData = new FormData(document.getElementById('mainPageJoinRoomForm'));
-                                                    console.log(...formData)
-                                                    // showModal()
-                                                    // await createRoom(formData)
+                                                    await joinRoom(formData)
                                                 }}
                                                 >
                                                     Join Room

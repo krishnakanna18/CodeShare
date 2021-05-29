@@ -77,8 +77,7 @@ const App=()=>{
             <Route exact path='/'>
               {renderHome()}
             </Route> 
-            <Route exact path='/room/:id' component={(props)=><Room {...props}></Room>}>
-              
+                <Route exact path='/room/:id' component={(props)=><Room {...props} user={{...user}}></Room>}>
             </Route>
         </Switch>
       </Router>
