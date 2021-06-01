@@ -225,51 +225,9 @@ const MainPage=(props)=>{
     }
 
 
-    let showModalErr=(textToDisplay)=>{
-        var locModal = document.getElementById('locModalDisplayMsg');
-        var btnclose = document.getElementById('w-change-close-err-msg');
-        var top=document.getElementById("mainPageWrapper");
-        var locModalText= document.getElementById("locModalLabelErrorMsg")
-
-        locModal.style.display = "block";
-        locModal.style.paddingRight = "17px";
-        locModal.className="modal fade show";
-        top.classList.add("enableOverlay");
-        locModalText.innerText=`${textToDisplay}`
-        
-        //hide the modal
-        btnclose.addEventListener('click', (e) => {
-            locModal.style.display = "none";
-            locModal.className="modal fade";
-            top.classList.remove("enableOverlay") 
-        });
-    }
-
-    //Display modal if user is logged in but will not be able to join the room.
-    let modalDisplayErr=()=>{
-        return(
-               <div className="modalAlreadyJoined">
-                    <div className="modal fade modalAlreadyJoined p-5" id="locModalDisplayMsg" tabIndex="-1" role="dialog" aria-labelledby="locModalLabelErrorMsg"
-                        aria-hidden="true">
-                        <div className="modal-dialog modalAlreadyJoined" role="document">
-                            <div className="modal-content modalAlreadyJoined">
-                                <div className="modal-header modalAlreadyJoined justify-content-center" style={{border:"none"}}>
-                                    <h5 className="modal-title modalAlreadyJoined" id="locModalLabelErrorMsg"></h5>
-                                </div>
-                                <div className="modal-footer modalAlreadyJoined justify-content-center" style={{border:"none"}}>
-                                    <button id="w-change-close-err-msg" type="button" className="btn btn-secondary">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-               </div>
-        )
-    }
-
     return (
         <React.Fragment>
         {modalDisplay()}
-        {modalDisplayErr()}
         <div  id="mainPageWrapper">
 
         <div>

@@ -136,16 +136,24 @@ io.on('connection',(socket)=>{
             }
             //Get the details of user who emitted the event
             let user=await User.findById(arg.participant)
-            if(user['room']!==undefined && user['room']!==null && user['room']!==room._id){       //Check if user is already in a room and not in the given room
-                redirect(room.roomId,401)
+            if(user===null || user===undefined)
+            {
+                redirect(undefined,401)
                 return
+            }
+            if(user['room']!==undefined && user['room']!==null ){       //Check if user is already in a room and not in the given room
+                if(!user['room'].equals(room._id)){                     //Check if the user connected to a room is not equal to the input room
+                    redirect(room.roomId,401)
+                    return
+                }
             }
             if(room['type']==="private" && room['password']!==arg.password){        //If private and password is not correct
                 redirect(undefined, 403);    
                 return;           
             }
             if(user['room']!=room._id){                         //If the user doesn't already exist
-                room['participants'].push(user._id);
+                if(room['participants'].indexOf(user._id)===-1)
+                    room['participants'].push(user._id);
                 user['room']=room._id
                 user['socketId']=socket.id
             }
@@ -153,7 +161,7 @@ io.on('connection',(socket)=>{
             await room.save();          
             await user.save();  
             //Let other sockets in the room updated their db
-            socket.to(`${arg.id}`).emit('newUserJoined',{
+            socket.broadcast.to(`${arg.id}`).emit('newUserJoined',{
                 updatedRoom: room
             })
             redirect(room.roomId,200); 

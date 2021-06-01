@@ -70,19 +70,20 @@ const App=(props)=>{
   return (  
     <React.Fragment>
       <Router>
+        {loading===false?
         <Switch>
-          <UserContext.Provider value={{ user, setUser, loggedin, logOutUser }}>
+          <UserContext.Provider value={{ user, loggedin , setUser, logOutUser}}>
               <Route exact path='/'>
                 {renderHome(props)}
               </Route> 
-                  <Route exact path='/room/:id' component={(props)=>{
+              <Route exact path='/room/:id' component={(props)=>{
                        return <Room {...props} ></Room>
                   }
-                  }>
+              }>
               </Route>
           </UserContext.Provider>
-
         </Switch>
+        :""}
       </Router>
       
     </React.Fragment>
