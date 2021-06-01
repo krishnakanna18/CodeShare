@@ -4,13 +4,14 @@ import serverEndpoint from './config'
 import MainPage from './components/mainPage'
 import Login from './components/login'
 import Room from './components/room'
+import UserContext from './contextProvider/userContext'
 import {
   BrowserRouter as Router,
   Route,
   Switch
 } from 'react-router-dom'
 
-const App=()=>{
+const App=(props)=>{
 
   let [user,setUser]=useState({});
   let [loggedin,setLoggedin]=useState(false);
@@ -26,14 +27,11 @@ const App=()=>{
 
       loginfo=await loginfo.json()
       if(loginfo.loggedin===true){
-
-        console.log(loginfo)
         setUser(loginfo.user)
         setLoggedin(true);
         setLoading(false);
       }
       else{
-        console.log("Destoryed",loginfo);
         setLoading(false);
       }
     }
@@ -56,17 +54,16 @@ const App=()=>{
     })
   }
 
-  const renderHome=()=>{      //Decides which component to run
+  const renderHome=(props)=>{      //Decides which component to run
 
-    console.log(loading)
     if(loading===true)
       return <div></div>
 
     if(loggedin===false){
-      return <Login ></Login>
+      return <Login {...props}></Login>
     }
     else{
-      return  <MainPage user={{...user}} loggedin={loggedin} logOutUser={logOutUser}></MainPage>
+      return  <MainPage {...props}></MainPage>
     }
   }
 
@@ -74,11 +71,17 @@ const App=()=>{
     <React.Fragment>
       <Router>
         <Switch>
-            <Route exact path='/'>
-              {renderHome()}
-            </Route> 
-                <Route exact path='/room/:id' component={(props)=><Room {...props} user={{...user}}></Room>}>
-            </Route>
+          <UserContext.Provider value={{ user, setUser, loggedin, logOutUser }}>
+              <Route exact path='/'>
+                {renderHome(props)}
+              </Route> 
+                  <Route exact path='/room/:id' component={(props)=>{
+                       return <Room {...props} ></Room>
+                  }
+                  }>
+              </Route>
+          </UserContext.Provider>
+
         </Switch>
       </Router>
       

@@ -1,10 +1,11 @@
-import React from 'react';
+import React ,{ useContext } from 'react';
 import { useState, useEffect } from 'react';
-import serverEndpoint from '../config'
+// import serverEndpoint from '../config'
 import '../css/mainPage.css'
 import { io } from "socket.io-client";
-import { useHistory } from "react-router-dom";
-
+import { useHistory, useLocation } from "react-router-dom";
+import UserContext from '../contextProvider/userContext'
+import SocketContext from '../contextProvider/socketContext'
 
 const MainPage=(props)=>{
 
@@ -13,14 +14,26 @@ const MainPage=(props)=>{
     let [prShowCreate,setprShowCreate]=useState(false);
     let [joinShow,setJoinShow]=useState(false);
     let [createShow,setCreateShow]=useState(false);
-    let [socket,setSocket]=useState(io(`${serverEndpoint}`))
-    
+    let {socket,setSocket}=useContext(SocketContext);     //Should be made available to all the other components
+    let {user, setUser, loggedin, logOutUser }=useContext(UserContext)
+    // let [msgLoggedin, setMsgLoggedin]=useState("")
 
-    let history=useHistory()
+    let history=useHistory(), location=useLocation();
 
-    useEffect(()=>{
-        console.log(props)
-    },[props])
+    // //When an error message is displayed
+    // useEffect(()=>{
+    //     // console.log(props)
+    //     try{
+
+    //         let {msgLoggedin:msg}=location.state;
+    //         console.log(msg)
+    //         if(msg!==null && msg!==undefined && msg.length>0 && msg){
+    //             showModalErr(msg)
+    //             set
+    //         }
+    //     }
+    //     catch(e){}
+    // },[msgLoggedin])
 
     useEffect(()=>{
 
@@ -36,8 +49,8 @@ const MainPage=(props)=>{
         setddst(!ddst)
     }
 
-    let logOutUser=()=>{
-        props.logOutUser()
+    let logOutUserWrapper=()=>{
+        logOutUser()
     }
 
     let showPwd=(type)=>{
@@ -88,17 +101,14 @@ const MainPage=(props)=>{
 
     //Join the already existing room.
     let joinExistingRoom=(id)=>{
-        console.log(id)
         history.push(`/room/${id}`)
     }
 
     let leaveExistingRoom=()=>{
-        socket.emit('leaveRoom',{host:props.user._id},(status)=>{
-            console.log(status)
+        socket.emit('leaveRoom',{host:user._id},(status)=>{
             let btnclose = document.getElementById('w-change-close');
             btnclose.click()
         })
-       
     }
     //Leave the existing room.
 
@@ -109,10 +119,12 @@ const MainPage=(props)=>{
             body[`${pair[0]}`]=pair[1]
         
         //Emit the details of the room along with the user id
-        socket.emit('createRoom',{...body, host:props.user._id},(roomId,status)=>{
+        socket.emit('createRoom',{...body, host:user._id},(roomId,status)=>{
             if(status===200 && roomId!==undefined && roomId!==null){
-                console.log(roomId);
-                history.push(`/room/${roomId}`)
+                history.push({
+                    pathname:`/room/${roomId}`,
+                    state:{"status":200} //Joined through 
+                })
             }
             else if(status===401){
                 //User is already in a room.
@@ -123,16 +135,13 @@ const MainPage=(props)=>{
 
     //Join room
     let joinRoom=async(formData)=>{
-
         //Form validation pending
         let body={}
         for(let pair of formData)
             body[`${pair[0]}`]=pair[1]
-        console.log(body)
         let infoText=document.getElementById("infoTextJoinRoom")
         //Emit the details of the room and join the room.
-        socket.emit('joinRoom',{...body,participant:props.user._id},(roomId,status)=>{
-
+        socket.emit('joinRoom',{...body,participant:user._id},(roomId,status)=>{
             if(status===401){
                 //User is already in a room.
                 showModal(roomId)
@@ -140,7 +149,6 @@ const MainPage=(props)=>{
             }
             //If the password given is wrong
             else if(status===403){
-                
                 if(infoText!==null){
                     infoText.innerText="Incorrect Password Provided"
                 }
@@ -152,13 +160,14 @@ const MainPage=(props)=>{
                     infoText.innerText="Room Doesn't exist"
                 }
             }
-
             //Successful join
             else if(status===200 && roomId!==undefined && roomId!==null){
-                history.push(`/room/${roomId}`)
+                history.push({
+                    pathname:`/room/${roomId}`,
+                    state:{"status":200} //Joined through 
+                })
             }
         })
-
     }
 
     let showModal=(roomId)=>{
@@ -182,7 +191,6 @@ const MainPage=(props)=>{
         }
         //hide the modal
         btnclose.addEventListener('click', (e) => {
-            console.log("Clicked")
             locModal.style.display = "none";
             locModal.className="modal fade";
             top.classList.remove("enableOverlay") 
@@ -193,21 +201,63 @@ const MainPage=(props)=>{
     let modalDisplay=()=>{
         return(
                <div className="modalAlreadyJoined">
-                    <div class="modal fade modalAlreadyJoined p-5" id="locModal" tabindex="-1" role="dialog" aria-labelledby="locModalLabel"
+                    <div className="modal fade modalAlreadyJoined p-5" id="locModal" tabIndex="-1" role="dialog" aria-labelledby="locModalLabel"
                         aria-hidden="true">
-                        <div class="modal-dialog modalAlreadyJoined" role="document">
-                            <div class="modal-content modalAlreadyJoined">
-                                <div class="modal-header modalAlreadyJoined justify-content-center" style={{border:"none"}}>
-                                    <h5 class="modal-title modalAlreadyJoined" id="locModalLabel">You've already joined a room.</h5>
+                        <div className="modal-dialog modalAlreadyJoined" role="document">
+                            <div className="modal-content modalAlreadyJoined">
+                                <div className="modal-header modalAlreadyJoined justify-content-center" style={{border:"none"}}>
+                                    <h5 className="modal-title modalAlreadyJoined" id="locModalLabel">You've already joined a room.</h5>
                                 </div>
-                                <div class="modal-body modalAlreadyJoined" style={{border:"none"}}>
+                                <div className="modal-body modalAlreadyJoined" style={{border:"none"}}>
                                     <div className="d-flex flex-row justify-content-between"> 
                                         <button className="col-5  modalAlreadyJoinedButton" id="reJoinRoom">Re-Join</button>
                                         <button className="col-5  modalAlreadyJoinedButton" id="leaveJoinedRoom">Leave</button>
                                     </div>
                                 </div>
-                                <div class="modal-footer modalAlreadyJoined justify-content-center" style={{border:"none"}}>
-                                    <button id="w-change-close" type="button" class="btn btn-secondary">Close</button>
+                                <div className="modal-footer modalAlreadyJoined justify-content-center" style={{border:"none"}}>
+                                    <button id="w-change-close" type="button" className="btn btn-secondary">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+               </div>
+        )
+    }
+
+
+    let showModalErr=(textToDisplay)=>{
+        var locModal = document.getElementById('locModalDisplayMsg');
+        var btnclose = document.getElementById('w-change-close-err-msg');
+        var top=document.getElementById("mainPageWrapper");
+        var locModalText= document.getElementById("locModalLabelErrorMsg")
+
+        locModal.style.display = "block";
+        locModal.style.paddingRight = "17px";
+        locModal.className="modal fade show";
+        top.classList.add("enableOverlay");
+        locModalText.innerText=`${textToDisplay}`
+        
+        //hide the modal
+        btnclose.addEventListener('click', (e) => {
+            locModal.style.display = "none";
+            locModal.className="modal fade";
+            top.classList.remove("enableOverlay") 
+        });
+    }
+
+    //Display modal if user is logged in but will not be able to join the room.
+    let modalDisplayErr=()=>{
+        return(
+               <div className="modalAlreadyJoined">
+                    <div className="modal fade modalAlreadyJoined p-5" id="locModalDisplayMsg" tabIndex="-1" role="dialog" aria-labelledby="locModalLabelErrorMsg"
+                        aria-hidden="true">
+                        <div className="modal-dialog modalAlreadyJoined" role="document">
+                            <div className="modal-content modalAlreadyJoined">
+                                <div className="modal-header modalAlreadyJoined justify-content-center" style={{border:"none"}}>
+                                    <h5 className="modal-title modalAlreadyJoined" id="locModalLabelErrorMsg"></h5>
+                                </div>
+                                <div className="modal-footer modalAlreadyJoined justify-content-center" style={{border:"none"}}>
+                                    <button id="w-change-close-err-msg" type="button" className="btn btn-secondary">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -219,6 +269,7 @@ const MainPage=(props)=>{
     return (
         <React.Fragment>
         {modalDisplay()}
+        {modalDisplayErr()}
         <div  id="mainPageWrapper">
 
         <div>
@@ -247,15 +298,15 @@ const MainPage=(props)=>{
                 <div className="col-sm-3 col-1 container-lg justify-content-center profileDropdown" style={{textAlign:"center", cursor:"pointer"}}>
                     
                     <div className="profileDropdown"  onClick={()=>{toggleDropDown()}}>
-                        <img src={`${props.user.imageUrl}`} className="homePageUserDP " alt=""></img>
+                        <img src={`${user.imageUrl}`} className="homePageUserDP " alt=""></img>
                         <div className="profileDropdown-content mt-2" id="profileDropdown-content">
                             <div className="profileDropdown-content-list d-flex flex-column ">
                                 <div className="col d-flex flex-row align-items-center justify-content-around">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg" className="col-2 justify-content-center"><path d="M8 8c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.65 0-8 1.35-8 4v2h16v-2c0-2.65-5.35-4-8-4z"></path></svg>
-                                <div className="col=10">{props.user.login}</div>
+                                <div className="col=10">{user.login}</div>
                                 </div>
                             </div>
-                            <div className="logOutButton" style={{textAlign:"left"}} onClick={logOutUser}>
+                            <div className="logOutButton" style={{textAlign:"left"}} onClick={logOutUserWrapper}>
                                 <span style={{paddingLeft:"25px"}}>Log Out</span>
                             </div>
                         </div>

@@ -1,15 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import GoogleLogin from 'react-google-login'
 import '../css/app.css'
 import serverEndpoint from '../config'
+import { useLocation } from 'react-router-dom'
 
-const Login=()=>{
+const Login=(props)=>{
+
+    const location = useLocation();
+
+    useEffect(()=>{
+        // console.log(location.state)
+    },[location])
 
     //Redirect to server for git oauth
     const gitAuth=(e)=>{
-        console.log("Getting Access Token from git....");
         window.open(`${serverEndpoint}/oauth/git`,'_self');
       }
+
+    let displayAdditionalInfo=()=>{
+      try{
+        let {msg}=location.state;
+        if(msg!==null || msg!==undefined)
+          return <div className="mt-1">
+                    <span style={{fontSize:"13px", color:"#fd4d4d"}}>{msg}</span>
+                </div>
+      }
+      catch(e){
+        return <div></div>
+      }
+      return <div></div>
+    }
     
     //Send information to server to login session
     let googleAuth=async(response)=>{
@@ -62,7 +82,8 @@ const Login=()=>{
                   <img style={{width:"20px", height:"20px"}} src='/icons/google.svg' alt=""></img>
                   </div>
                 <div className="col-11"><span className="">Log in with Google</span></div> */}
-          </div>  
+              </div>
+              {displayAdditionalInfo()}  
         </div>
 
         <div className="mainPageLogo d-flex align-items-center justify-content-around flex-row">

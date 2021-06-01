@@ -58,11 +58,7 @@ let isLoggedin=(req,res,next)=>{
     if(req.session.loggedin)
         next();
     else
-    {     
-          // res.status(404).json({"log_data":"Not logged in",...res.locals})
-          res.status(401);
-          return res.redirect(`${clientEndPoint}`)
-    }
+        return res.status(401).json({"msg":"You're not Logged in."});       //Unauthorized must be logged in first
 }
 
 //Check if the user is not already logged in
@@ -100,6 +96,9 @@ io.on('connection',(socket)=>{
         try{
             //Get the details of user who emitted the event
             let user=await User.findById(arg.host)
+            if(user===undefined || user===null){
+                return
+            }
 
             if(user['room']!==undefined && user['room']!==null){       //Check if user is already in a room
                 console.log(401)
@@ -137,7 +136,6 @@ io.on('connection',(socket)=>{
             }
             //Get the details of user who emitted the event
             let user=await User.findById(arg.participant)
-
             if(user['room']!==undefined && user['room']!==null && user['room']!==room._id){       //Check if user is already in a room and not in the given room
                 redirect(room.roomId,401)
                 return
@@ -147,20 +145,23 @@ io.on('connection',(socket)=>{
                 return;           
             }
             if(user['room']!=room._id){                         //If the user doesn't already exist
-
                 room['participants'].push(user._id);
                 user['room']=room._id
+                user['socketId']=socket.id
             }
             //Update user and room details and call client redirect function
             await room.save();          
             await user.save();  
+            //Let other sockets in the room updated their db
+            socket.to(`${arg.id}`).emit('newUserJoined',{
+                updatedRoom: room
+            })
             redirect(room.roomId,200); 
         }
         catch(e){
             console.log(e)
             redirect(undefined,404)
         }
-
     })
 
     //Leave room
@@ -172,7 +173,6 @@ io.on('connection',(socket)=>{
             if(room!==undefined && room!==null){
                 //Delete the room if the host has ended the meeting
                 if(room['host']===mongoose.Types.ObjectId(arg.host)){
-                    console.log(room['host'],mongoose.Types.ObjecId(arg.host))
                     //Emit an end room event to all participants of the room 
                     // socket.to(room['roomId']).emit('endRoom')    
                     await Room.findByIdAndDelete(room._id)
@@ -180,7 +180,6 @@ io.on('connection',(socket)=>{
                 //Remove the participant from the room
                 else{
                     room['participants'].splice(room['participants'].indexOf(user._id),1);
-                    console.log(room);
                     await room.save();
                 }
                 //Remove the room from the user
@@ -206,10 +205,8 @@ io.on('connection',(socket)=>{
 })
 
 app.set('socketio',io)
-
 app.use('/oauth',oauth);
-app.use('/room',room);
-
+app.use('/room', isLoggedin,room);
 
 server.listen(process.env.PORT || 9000,'0.0.0.0',(err)=>{
     if(err) console.log(err);
