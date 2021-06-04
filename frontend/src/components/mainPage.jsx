@@ -397,6 +397,18 @@ const MainPage=(props)=>{
             </div>
 
         </div>
+
+        {/* If user is currently in a room link to join the room 
+        <div className="d-flex mt-3 " style={{margin:"0 auto", width:"250px"}}>
+            <button className="mainPageCreateRoomFormSubmit"
+            onClick={()=>{
+                history.push({
+                    pathname:""
+                })
+            }}
+            >Join running room</button>
+        </div> */}
+
         </div>
         </React.Fragment>
     )

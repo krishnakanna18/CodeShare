@@ -6,12 +6,14 @@ const express=require("express");
       socket=require("socket.io");
       http=require("http");
       oauth=require('./Routers/oauth');
+      git=require('./Routers/gitfiles')
       room=require('./Routers/room');
       path=require('path');
       session = require("express-session");
       mongoose = require("mongoose");
       Room=require('./Schemas/room');
       User=require('./Schemas/user');
+
 
 const { v4: uuid } = require('uuid');
 
@@ -90,7 +92,6 @@ io.on('connection',(socket)=>{
 
     //Creating a room by the host
     socket.on('createRoom',async(arg,redirect)=>{
-        
         let roomId=uuid();
         socket.join(`${roomId}`);
         try{
@@ -101,7 +102,6 @@ io.on('connection',(socket)=>{
             }
 
             if(user['room']!==undefined && user['room']!==null){       //Check if user is already in a room
-                console.log(401)
                 let room=await Room.findById(user['room'])
                 redirect(room.roomId,401)
                 return
@@ -210,11 +210,16 @@ io.on('connection',(socket)=>{
         socket.leave(`${arg.room}`)
     })
 
+    socket.on('disconnect',arg=>{
+        // console.log("Socket Disconnected", socket.id)
+    })
+
 })
 
 app.set('socketio',io)
 app.use('/oauth',oauth);
 app.use('/room', isLoggedin,room);
+app.use('/git',isLoggedin, git);
 
 server.listen(process.env.PORT || 9000,'0.0.0.0',(err)=>{
     if(err) console.log(err);

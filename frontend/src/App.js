@@ -20,6 +20,7 @@ const App=(props)=>{
   useEffect(()=>{
 
     async function getInfo(){
+      console.log(`${serverEndpoint}/oauth/isloggedin`)
       let loginfo=await fetch(`${serverEndpoint}/oauth/isloggedin`,{
         method:"GET",
         credentials:"include"

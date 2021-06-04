@@ -1,0 +1,42 @@
+.codeEditorRepoSetWrapper{
+    margin: 0 auto;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.codeEditorRepoSetDisplay{
+
+    background-color: #151a21;
+    border-radius: 8px;
+    outline: none;
+    padding: 20px;
+    max-height: 400px;
+    max-width: 730px;
+    width: 100%;
+    font-size: 18px;
+}
+
+.codeEditorRepoChoiceBtn{
+    border-right:3px solid #242c37;
+
+}
+
+.codeEditorRepoChoiceBtnInd{
+    width: 90%;
+    border-radius: 10px;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    padding: 10px;
+}
+
+.codeEditorRepoImport{
+    text-align:center;
+    margin-left:15px;
+    background-color:#242c37;
+    padding:10px;
+    border-radius: 10px;
+    width: 70%;
+}
+

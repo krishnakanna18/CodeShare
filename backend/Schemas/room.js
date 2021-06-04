@@ -9,7 +9,8 @@ let roomSchema=new mongoose.Schema({
     description:{type:String},
     type:{type:String, default:"public"},
     participants:[{type:mongoose.Schema.Types.ObjectId, ref:'users'}],
-    host:{type:mongoose.Schema.Types.ObjectId, ref:'users'}
+    host:{type:mongoose.Schema.Types.ObjectId, ref:'users'},
+    repo:{type:String, default:""}
 })
 
 

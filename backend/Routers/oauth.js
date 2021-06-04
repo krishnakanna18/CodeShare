@@ -3,8 +3,22 @@ const express=require("express");
       fetch=require("node-fetch");
       mongoose=require("mongoose");
       User=require("../Schemas/user");
-
+      
 const { gitConfig , serverEndPoint, clientEndPoint} = require("../config");
+
+let getAccessToken=async(code)=>{
+    try{
+        let resp=await fetch('https://github.com/login/oauth/access_token?code='+code+'&client_id='+gitConfig.clientId+'&client_secret='+gitConfig.clientSecret,{
+            method:"post",
+            headers:{'Accept':'application/json'},
+      })
+        resp=await resp.json()
+        return resp
+    }
+    catch(e){
+        console.log(e," in getting access token")
+    }
+}
 
 router.get('/isloggedin',async(req,res)=>{
     
@@ -28,15 +42,10 @@ router.get('/git',(req,res)=>{
     return  res.redirect('https://github.com/login/oauth/authorize?client_id='+gitConfig.clientId+'&redirect_uri='+serverEndPoint+'/oauth/gitCallBack/getToken');
 })
 
-
 router.get('/gitCallBack/getToken',async(req,res)=>{
     let {code}=req.query
     try{
-        let resp=await fetch('https://github.com/login/oauth/access_token?code='+code+'&client_id='+gitConfig.clientId+'&client_secret='+gitConfig.clientSecret,{
-            method:"post",
-            headers:{'Accept':'application/json'},
-      })
-        resp=await resp.json()
+        let resp=await getAccessToken(code)
         req.session.access_token=resp.access_token
       
         //Request to get the authenticated user info
@@ -51,7 +60,8 @@ router.get('/gitCallBack/getToken',async(req,res)=>{
         if(user===undefined || user===null){
             user=new User({
                 login:resp.login,
-                oauth:"git"
+                oauth:"git",
+                imageUrl:resp.avatar_url
             })
             await user.save()
         }
@@ -59,6 +69,7 @@ router.get('/gitCallBack/getToken',async(req,res)=>{
         //Loggin the user in by creating session
         req.session.loggedin=true
         req.session.user={login:resp.login, imageUrl:resp.avatar_url, url:resp.url,_id:user._id}
+        req.session.user.oauth='git'
       
     }
     catch(e){
@@ -67,6 +78,18 @@ router.get('/gitCallBack/getToken',async(req,res)=>{
         console.log(e)
     }
     return res.redirect(`${clientEndPoint}`)
+})
+
+router.get('/gitCallBack/getRepos',async(req,res)=>{
+    let {code}=req.query
+    try{
+        let resp=await getAccessToken(code)
+        req.session.repo_access_token=resp.access_token
+        return res.redirect(`${clientEndPoint}/room/${req.session.roomId}?repo_access_granted=true`)
+    }
+    catch(e){
+        return res.redirect(`${clientEndPoint}/room/${req.session.roomId}?repo_access_granted=false`)
+    }
 })
 
 
@@ -78,21 +101,22 @@ router.get('/gitCallBack',(req,res)=>{
 })
 
 router.post('/google',async(req,res)=>{
-  
-     
     let user=await User.findOne({login:req.body.user.login, oauth:"google"})
     // console.log(user)
     if(user===undefined || user===null){
         user=new User({
             login:req.body.user.login,
-            oauth:"google"
+            oauth:"google",
+            imageUrl:req.body.user.imageUrl
         })
         await user.save()
     }
     req.session.loggedin=true
     req.session.user=req.body.user
+
     req.session.access_token=req.body.access_token
     req.session.user._id=user._id
+    req.session.user.oauth='google'
 
     res.status(200).json({"message":"Success"})
 })
