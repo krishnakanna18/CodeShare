@@ -13,6 +13,9 @@ const CodeEditor=(props)=>{
     let [repoChoice, setRepoChoice]=useState('import');     //Import of create a new repository -- 'import' import from github; 'create' create a new repo
     let {repo_access_granted}=props                         //
     let [isGitAuth, setGitAuth]=useState(false);            //User's permission to access their git files
+    let [repoListShow, setListShow]=useState(false);        //Toggle button to show repo list
+    let [repoList,setRepoList]=useState([]);
+
 
     useEffect(()=>{
         if(repo_access_granted==='true'){        //If the redirected resouce returns with granted request
@@ -28,13 +31,21 @@ const CodeEditor=(props)=>{
 
     let getGitRepos=()=>{
         
-        window.open(`${serverEndPoint}/git/oauth/repos?roomId=${props.roomId}`,`_self`);
-        // win.close()
+        window.open(`${serverEndPoint}/git/oauth/repos?roomId=${props.roomId}`,`_self`);       //Send oauth request to server
     }
 
+    //Get repository list from the server
     let getReposInfo=async()=>{
-        let repos=await fetch(`${serverEndPoint}/git/repos`);
-        repos=repos.json()
+        let repos=await fetch(`${serverEndPoint}/git/repos`,{
+            method:"get",
+            credentials:"include"
+        });
+        repos=await repos.json()
+        setRepoList(repos.repos)
+    }
+
+    //Get the repository contents from the server
+    let getRepoContent=async()=>{
 
     }
 
@@ -56,14 +67,29 @@ const CodeEditor=(props)=>{
         }
         else if(isGitAuth===true){
             return(
-                <div>
-                    
+                <div className="container-lg" onClick={(e)=>{}} style={{cursor:"pointer"}} >
+
+                    <div className="codeEditorRepoListView d-flex flex-column">
+                        <div className="col d-flex flex-row pl-2 pr-2 justify-content-between" onClick={()=>{setListShow(!repoListShow)}}>
+                                <span className="">Choose a repo from the list</span>
+                                <img  src='/icons/drop-down-arrow.png' style={{width:"16px", height:"16px"}} alt=""></img>
+                        </div>
+                        {repoListShow===true?
+                            <div className="mt-3 col d-flex flex-column">
+                                {repoList.map((repo,id)=>{
+                                    return(
+                                        <div className="col mt-1 mb-1 pt-1" style={{borderTop:"1px solid #0b0e11", textAlign:"center"}}  onClick={(e)=>{getRepoContent(id)}}>
+                                            {repo.name}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        :""}
+                    </div>
                 </div>
             )
         }
-        
     }
-
     let repoImport=()=>{
         let choiceStyle={color:"black",backgroundColor:"#242c37"},defStyle={color:"black", backgroundColor:"#242c37"}       //Default button styles
         if(repoChoice==='import')
@@ -104,12 +130,10 @@ const CodeEditor=(props)=>{
             )
         else return <div></div>
     }
-    
     return (
             <React.Fragment>
                 {repoImport()}
             </React.Fragment>
     )
 }
-
 export default CodeEditor;

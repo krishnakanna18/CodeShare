@@ -20,6 +20,16 @@ let getAccessToken=async(code)=>{
     }
 }
 
+
+let getGitUser=async(access_token)=>{
+    let resp=await fetch('https://api.github.com/user',{
+        method:"get",
+        headers:{'Authorization':'token '+access_token}
+    })
+    resp=await resp.json()
+    return resp
+}
+
 router.get('/isloggedin',async(req,res)=>{
     
     if(req.session.loggedin===true){
@@ -49,11 +59,7 @@ router.get('/gitCallBack/getToken',async(req,res)=>{
         req.session.access_token=resp.access_token
       
         //Request to get the authenticated user info
-        resp=await fetch('https://api.github.com/user',{
-            method:"get",
-            headers:{'Authorization':'token '+resp.access_token}
-        })
-        resp=await resp.json()
+        resp=await getGitUser(resp.access_token)
 
         let user=await User.findOne({login:resp.login, oauth:"git"})
         // console.log(user)
@@ -84,10 +90,14 @@ router.get('/gitCallBack/getRepos',async(req,res)=>{
     let {code}=req.query
     try{
         let resp=await getAccessToken(code)
-        req.session.repo_access_token=resp.access_token
+        req.session.gitaccess={}
+        req.session.gitaccess.repo_access_token=resp.access_token
+        resp=await getGitUser(resp.access_token)
+        req.session.gitaccess.login=resp.login
         return res.redirect(`${clientEndPoint}/room/${req.session.roomId}?repo_access_granted=true`)
     }
     catch(e){
+        console.log(e)
         return res.redirect(`${clientEndPoint}/room/${req.session.roomId}?repo_access_granted=false`)
     }
 })
