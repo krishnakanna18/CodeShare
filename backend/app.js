@@ -10,7 +10,7 @@ const express=require("express");
       room=require('./Routers/room');
       path=require('path');
       session = require("express-session");
-      mongoose = require("mongoose");
+      mongoose = require("./dbconnection");
       Room=require('./Schemas/room');
       User=require('./Schemas/user');
 

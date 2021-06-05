@@ -76,6 +76,7 @@ const CodeEditor=(props)=>{
                         </div>
                         {repoListShow===true?
                             <div className="mt-3 col d-flex flex-column">
+                                <div  style={{overflowY:"scroll",height:"150px"}} >
                                 {repoList.map((repo,id)=>{
                                     return(
                                         <div className="col mt-1 mb-1 pt-1" style={{borderTop:"1px solid #0b0e11", textAlign:"center"}}  onClick={(e)=>{getRepoContent(id)}}>
@@ -83,6 +84,7 @@ const CodeEditor=(props)=>{
                                         </div>
                                     )
                                 })}
+                                </div>
                             </div>
                         :""}
                     </div>
@@ -102,7 +104,7 @@ const CodeEditor=(props)=>{
                     <div className="codeEditorRepoSetWrapper">
                         <div className="codeEditorRepoSetDisplay">
                             <h5 style={{textAlign:"center", color:"#fd4d4d"}}>Select a repo or create one from github</h5>
-                            <div className="mt-5 pb-3 codeEditorRepoChoice d-flex flex-row align-items-center justify-items-between">
+                            <div className="mt-5 pb-3 codeEditorRepoChoice d-flex flex-row  justify-items-between">
                                 <div className="col-4 pr-2 codeEditorRepoChoiceBtn">
                                     <div className="d-flex flex-column justify-content-center">
                                         <button className="col codeEditorRepoChoiceBtnInd" style={choiceStyle}>

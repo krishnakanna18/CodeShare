@@ -1,5 +1,4 @@
-const  mongoose=require("mongoose");
-mongoose.connect("mongodb://localhost:27017/Meet2Code", {useNewUrlParser: true , useUnifiedTopology: true } )
+const  mongoose=require("../dbconnection");
 
 let roomSchema=new mongoose.Schema({
     roomId:{type:String,unique:true,required:true},

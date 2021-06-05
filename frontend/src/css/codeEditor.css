@@ -12,7 +12,7 @@
     border-radius: 8px;
     outline: none;
     padding: 20px;
-    max-height: 400px;
+    max-height: 350px;
     max-width: 730px;
     height: 100%;
     width: 100%;
@@ -47,4 +47,8 @@
     background-color: #242c37;
     color: black;
     padding: 10px;
+}
+
+.repoListDisplayScroll::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
 }
