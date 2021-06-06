@@ -122,6 +122,9 @@ const Room=(props)=>{
                 })
             }
             setRoom(resp.room)  
+            if(resp.room['repoContent']!=undefined){    //If repo already been set
+                console.log(resp.room['repoContent'])
+            }
             setLoading(false)
         })()
         // socket event to get room information

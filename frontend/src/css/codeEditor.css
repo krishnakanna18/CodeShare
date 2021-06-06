@@ -52,3 +52,14 @@
 .repoListDisplayScroll::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
 }
+
+.codeEditorDisplayScroll::-webkit-scrollbar{
+
+    color: #0b0e11;
+}
+
+
+.codeEditorDisplayItem:hover{
+    background-color: #0b0e11;
+    color: white;
+}

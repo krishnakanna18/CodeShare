@@ -172,6 +172,19 @@ io.on('connection',(socket)=>{
         }
     })
 
+    //Set the room's repository
+    socket.on('setRepository',async(arg)=>{
+        try{
+            let {roomId, repo}=arg
+            socket.broadcast.to(`${roomId}`).emit('getRepository',{
+                repo:repo
+            })
+        }
+        catch(e){
+            console.log(e)
+        }
+    })
+
     //Leave room
     socket.on('leaveRoom',async(arg,redirect)=>{
         try{

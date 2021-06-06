@@ -11,11 +11,20 @@ const CodeEditor=(props)=>{
     let [isSet, setRepoSet]=useState(false);                //Is the repository for the room set.
     let {user,room,socket}=props                            //Props from the parent component
     let [repoChoice, setRepoChoice]=useState('import');     //Import of create a new repository -- 'import' import from github; 'create' create a new repo
-    let {repo_access_granted}=props                         //
+    let {repo_access_granted}=props                         //Access granted to access user repositories list
     let [isGitAuth, setGitAuth]=useState(false);            //User's permission to access their git files
     let [repoListShow, setListShow]=useState(false);        //Toggle button to show repo list
-    let [repoList,setRepoList]=useState([]);
+    let [repoList,setRepoList]=useState([]);                //List of repositories()
+    let [repoContent, setRepoConent]=useState({});          //Stores the repository content
 
+    //componentDidMount
+    useEffect(()=>{
+
+        socket.on('getRepository',(args)=>{
+            console.log('Repo set',args.repo)
+            setRepoConent(args.repo)
+        })
+    },[])
 
     useEffect(()=>{
         if(repo_access_granted==='true'){        //If the redirected resouce returns with granted request
@@ -45,8 +54,19 @@ const CodeEditor=(props)=>{
     }
 
     //Get the repository contents from the server
-    let getRepoContent=async()=>{
-
+    let getRepoContent=async(id)=>{
+        let repo=repoList[id]
+        let res=await fetch(`${serverEndPoint}/git/repos/${repo.name}/${room._id}`,{
+            method:"get",
+            credentials:"include"
+        })
+        let {status}=res
+        res=await res.json()
+        if(status===200){
+            setRepoConent(res['repo'])
+            socket.emit('setRepository',{roomId:room.roomId, repo:res['repo']})
+        }
+        console.log(res['repo'])
     }
 
     //Get the list of repos from the user's github and display for selection
@@ -76,10 +96,10 @@ const CodeEditor=(props)=>{
                         </div>
                         {repoListShow===true?
                             <div className="mt-3 col d-flex flex-column">
-                                <div  style={{overflowY:"scroll",height:"150px"}} >
+                                <div  style={{overflowY:"scroll",height:"150px"}} className="codeEditorDisplayScroll">
                                 {repoList.map((repo,id)=>{
                                     return(
-                                        <div className="col mt-1 mb-1 pt-1" style={{borderTop:"1px solid #0b0e11", textAlign:"center"}}  onClick={(e)=>{getRepoContent(id)}}>
+                                        <div key={id} className="col mt-1 mb-1 pt-1 codeEditorDisplayItem" style={{borderTop:"1px solid #0b0e11", textAlign:"center"}}  onClick={(e)=>{getRepoContent(id)}}>
                                             {repo.name}
                                         </div>
                                     )
@@ -95,9 +115,9 @@ const CodeEditor=(props)=>{
     let repoImport=()=>{
         let choiceStyle={color:"black",backgroundColor:"#242c37"},defStyle={color:"black", backgroundColor:"#242c37"}       //Default button styles
         if(repoChoice==='import')
-            choiceStyle={backgroundColor:"black", color:"#242c37"}
+            choiceStyle={backgroundColor:"black", color:"#fd4d4d"}
         else
-            defStyle={backgroundColor:"black", color:"#242c37"}
+            defStyle={backgroundColor:"black", color:"#fd4d4d"}
        
         if(isSet===false && user._id===room['host'])
             return(     

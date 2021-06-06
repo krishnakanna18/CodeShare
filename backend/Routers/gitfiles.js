@@ -3,6 +3,36 @@ const express=require("express");
       fetch=require("node-fetch");
       mongoose=require("mongoose");
       User=require("../Schemas/user");
+      Room = require("../Schemas/room");
+
+const { gitConfig , serverEndPoint, clientEndPoint} = require("../config");
+//Recursively construct file structure
+let parseFileStructure=(repo)=>{
+
+    let root={children:{}}              //Root immediate children: 
+    //Loop invariant -- when inserting x/y - x should already be in the object
+    for(let child of repo){
+        let path=child['path'].split('/');       //Heirachy of file names as array
+        if(path.length===1){
+            if(child['type']==='tree')
+                root.children[path[0]]={children:{},...child}       //If 1st level children are not present add
+            else
+                root.children[path[0]]={...child}
+        }
+        else{
+            let parent=root, i=0;
+            for(i=0; i<path.length-1; i++)              //Find the immediate parent of the file
+                parent=parent.children[path[i]];
+
+             //Add file to the immediate parent
+            if(child['type']==='tree')
+                parent.children[path[i]]={children:{},...child}       
+            else
+                parent.children[path[i]]={...child}
+        }
+    }
+    return root;
+}
 
 //Router to get additional permission for repository operations
 router.get('/oauth/repos',async(req,res)=>{
@@ -49,5 +79,20 @@ router.get('/repos',async(req,res)=>{
     res.status(200).json({repos:repos})
 
 })
-const { gitConfig , serverEndPoint, clientEndPoint} = require("../config");
+
+//Get the recursive structure of a repository(names only)
+//Only entry point after /repos
+router.get('/repos/:repo/:roomId',async(req,res)=>{
+    let {repo, roomId}=req.params
+    let {gitaccess}=req.session 
+
+    //Get recursive file structure
+    repo=await fetch(`https://api.github.com/repos/${gitaccess.login}/${repo}/git/trees/master?recursive=1`)
+    repo=await repo.json()
+    repo=parseFileStructure(repo['tree'])       //Parse the file structure -- construct tree
+    let newData=await Room.findByIdAndUpdate(roomId, {$set:{repoContent:repo}})
+    res.status(200).json({repo:repo})
+})
+
+
 module.exports=router
